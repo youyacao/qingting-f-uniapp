@@ -14,4 +14,11 @@
 
 <style>
 	/*每个页面公共css */
+	.content{
+		display: flex;
+		flex-direction: column;
+		flex: 1;
+		height: 100vh;
+		background-color:#1c1c1c;
+	}
 </style>
