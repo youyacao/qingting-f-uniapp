@@ -8,9 +8,10 @@
 			<uni-grid :column="3" :show-border="false" :square="false" :highlight="false">
 				<uni-grid-item v-for="(item,_index) in cate.list" :key="item.id">
 					<view class="item-box" @click="goTodetail(item)">
-						<image class="cate-image" :src="base_url + item.icon" v-if="item.icon"></image>
+						<image class="cate-image" :src="item.thumb" v-if="item.thumb"></image>
 						<image class="cate-image" v-else src="@/static/images/no_image.jpg"></image>
 						<text class="item-title">{{item.title}}</text>
+						<text class="item-score">{{item.score}}</text>
 					</view>
 				</uni-grid-item>
 			</uni-grid>
@@ -86,11 +87,11 @@
 	.item-box{
 		width: 220rpx;
 		margin: 10rpx 0rpx;
+		background-color: #C8C7CC;
 	}
 	.cate-image{
 		width: 220rpx;
 		height: 280rpx;
-		border-radius: 10rpx;
 	}
 	.item-title{
 		background-color: rgba(0,0,0,0.3);
@@ -104,5 +105,13 @@
 		text-align: center;
 		lines: 1;
 		text-overflow: ellipsis;
+	}
+	.item-score{
+		position: absolute;
+		top: 5rpx;
+		right: 10rpx;
+		font-size: $uni-font-size-base;
+		color: #ce5e30;
+		font-weight: bold;
 	}
 </style>

@@ -1,22 +1,224 @@
 <template>
-	<view>
-		
+	<view style="flex: 1;">
+		<waterfall style="flex: 1;" column-count="3" column-width="auto" column-gap="0" :bounce="true">
+			<header style="position: sticky;">
+				<view class="top-box">
+					<view :style="{height:statusBarHeight + 'px'}"></view>
+					<uni-search-bar @confirm="search" @input="input" bgColor="#2f2f2f"></uni-search-bar>
+				</view>
+			</header>
+			<header>
+				<view class="select-box" v-if="cateInfo">
+					<view class="select-row">
+						<scroll-view :scroll-x="true" class="select-row-scroll" :show-scrollbar="false">
+							<text class="select-text"
+							:class="{'select-text-hover':isNoSelect('type')}"
+							@click="onSelect('type',null)">全部影视</text>
+							<text class="select-text"
+								:class="{'select-text-hover':searchForm.type == item.key}" 
+								v-for="(item,index) in cateInfo.type_list"
+								:key="item.key"
+								@click="onSelect('type',item.key)">{{item.value}}</text>
+						</scroll-view>
+					</view>
+					<view class="select-row">
+						<scroll-view :scroll-x="true" class="select-row-scroll" :show-scrollbar="false">
+							<text class="select-text"
+							:class="{'select-text-hover':isNoSelect('cate')}"
+							@click="onSelect('category_id',null)">全部类型</text>
+							<text class="select-text"
+								:class="{'select-text-hover':searchForm.category_id == item.id}" 
+								v-for="(item,index) in cateInfo.category_list"
+								:key="item.id"
+								@click="onSelect('category_id',item.id)">{{item.name}}</text>
+						</scroll-view>
+					</view>
+					<view class="select-row">
+						<scroll-view :scroll-x="true" class="select-row-scroll" :show-scrollbar="false">
+							<text class="select-text"
+							:class="{'select-text-hover':isNoSelect('region')}"
+							@click="onSelect('region',null)">全部地区</text>
+							<text class="select-text"
+								:class="{'select-text-hover':searchForm.region == item.key}" 
+								v-for="(item,index) in cateInfo.region_list"
+								:key="item.key"
+								@click="onSelect('region',item.key)">{{item.value}}</text>
+						</scroll-view>
+					</view>
+					<view class="select-row">
+						<scroll-view :scroll-x="true" class="select-row-scroll" :show-scrollbar="false">
+							<text class="select-text"
+							:class="{'select-text-hover':isNoSelect('year')}"
+							@click="onSelect('year',null)">全部年份</text>
+							<text class="select-text"
+								:class="{'select-text-hover':searchForm.year == item.key}" 
+								v-for="(item,index) in cateInfo.year_list"
+								:key="item.key"
+								@click="onSelect('year',item.key)">{{item.value}}</text>
+						</scroll-view>
+					</view>
+				</view>
+				<view class="nodata-box" v-if="this.videoList.length == 0">
+					<text class="nodata-text">暂无数据</text>
+				</view>
+			</header>
+			<cell v-for="(item,index) in videoList">
+				<view class="item-box" @click="goTodetail(item)">
+					<image class="cate-image" :src="item.thumb" v-if="item.thumb"></image>
+					<image class="cate-image" v-else src="@/static/images/no_image.jpg"></image>
+					<text class="item-score">{{item.score}}</text>
+				</view>
+			</cell>
+			
+			<loading class="loading-box" @loading="onloading" :display="loadinging ? 'show' : 'hide'">
+				<loading-indicator></loading-indicator>
+				<text class="load-text">加载中</text>
+			</loading>
+		</waterfall>
 	</view>
 </template>
 
 <script>
+	import {
+		mapGetters
+	} from 'vuex'
+	import {category} from "@/js_sdk/index.js"
+	import {searchVideo} from "@/js_sdk/video.js"
 	export default {
 		data() {
 			return {
-				
+				cateInfo:null,
+				searchForm:{
+					keyword:null,
+					type:null,
+					region:null,
+					year:null,
+					category_id:null,
+					page:1,
+					limit:24
+				},
+				videoList:[],
+				total_page:0,
+				current_page:1,
+				loadinging:false
 			}
 		},
+		computed: {
+			...mapGetters(['statusBarHeight', 'pageInfo'])
+		},
+		onLoad() {
+			this.getList()
+			this.getCategory()
+		},
 		methods: {
-			
+			getCategory(){
+				category().then(res=>{
+					this.cateInfo = res.data
+				}).catch(error=>{
+					console.log(error)
+				})
+			},
+			getList(){
+				this.searchForm.page = this.current_page
+				
+				searchVideo(this.searchForm).then(res=>{
+					this.loadinging = false
+					this.total_page = res.total_page
+					this.current_page = res.current_page
+					this.videoList = this.videoList.concat(res.data.list)
+				}).catch(error=>{
+					this.loadinging = false
+					console.log(error)
+				})
+			},
+			search(){
+				this.getList()
+			},
+			input({value}){
+				this.searchForm.keyword = value
+			},
+			isNoSelect(name){
+				return this.searchForm[name] ? false : true
+			},
+			onSelect(name,value){
+				this.searchForm[name] = value
+				this.current_page = 1
+				this.total_page = 0
+				this.videoList = []
+				this.getList()
+			},
+			goTodetail(item){
+				this.$store.dispatch("video",item)
+				uni.navigateTo({
+					url:"/pages/detail/detail?id="+item.id
+				})
+			},
+			onloading(){
+				this.loadinging = true
+				this.current_page++
+				this.getList()
+			}
 		}
 	}
 </script>
 
-<style>
-
+<style lang="scss" scoped>
+.top-box{
+	background-color: $uni-bg-color;
+	padding-bottom: 10rpx;
+}
+.select-row{
+	padding: 10rpx;
+}
+.select-row-scroll{
+	flex-direction: row;
+}
+.select-text{
+	color: $uni-text-color;
+	padding: 10rpx;
+	margin: 0 10rpx;
+	font-size: $uni-font-size-base;
+}
+.select-text-hover{
+	color: #ec3027;
+	background-color: #262626;
+	font-weight: bold;
+}
+.item-box{
+	width: 230rpx;
+	margin: 10rpx 0rpx;
+	background-color: #C8C7CC;
+}
+.cate-image{
+	width: 230rpx;
+	height: 300rpx;
+}
+.item-score{
+	position: absolute;
+	bottom: 5rpx;
+	right: 5rpx;
+	font-size: $uni-font-size-base;
+	color: #ce5e30;
+	font-weight: bold;
+}
+.loading-box{
+	width: 750rpx;
+	justify-content: center;
+	align-items: center;
+	flex-direction: row;
+	padding: 20rpx;
+}
+.load-text{
+	color: #F1F1F1;
+	margin-left: 30rpx;
+	font-size: $uni-font-size-base;
+}
+.nodata-box{
+	padding: 30rpx;
+}
+.nodata-text{
+	text-align: center;
+	font-size: $uni-font-size-base;
+	color: #F1F1F1;
+}
 </style>

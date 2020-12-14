@@ -3,7 +3,7 @@
 		{
 			"path": "pages/index/index",
 			"style": {
-				"navigationBarTitleText": "南瓜影视"
+				"navigationBarTitleText": "蜻蜓影视"
 			}
 		}
 	    ,{
@@ -11,6 +11,7 @@
             "style" :                                                                                    
             {
                 "navigationBarTitleText": "",
+				"navigationStyle":"custom",
                 "enablePullDownRefresh": false
             }
             
@@ -54,7 +55,7 @@
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "white",
-		"navigationBarTitleText": "南瓜影视",
+		"navigationBarTitleText": "蜻蜓影视",
 		"navigationBarBackgroundColor": "#0e0e0e",
 		"backgroundColor": "#1c1c1c"
 	},
