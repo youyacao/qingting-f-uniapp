@@ -5,10 +5,26 @@
 </template>
 
 <script>
+	import {
+		mapGetters
+	} from 'vuex'
+	
 	export default {
 		data() {
 			return {
 				
+			}
+		},
+		computed: {
+			...mapGetters(['statusBarHeight', 'pageInfo','userInfo','isLogin'])
+		},
+		onShow() {
+			
+			if(!this.isLogin){
+				uni.navigateTo({
+					url:"/pages/login/login"
+				})
+				return
 			}
 		},
 		methods: {

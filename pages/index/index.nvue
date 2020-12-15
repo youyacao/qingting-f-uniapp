@@ -3,7 +3,7 @@
 		<view class="category-list" v-for="(cate,index) in cateList" :key="cate.id">
 			<view class="cate-title-box">
 				<text class="category-title">{{cate.name}}</text>
-				<text class="more-title">更多</text>
+				<text class="more-title" v-if="0">更多</text>
 			</view>
 			<uni-grid :column="3" :show-border="false" :square="false" :highlight="false">
 				<uni-grid-item v-for="(item,_index) in cate.list" :key="item.id">

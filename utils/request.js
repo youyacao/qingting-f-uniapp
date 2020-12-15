@@ -19,7 +19,7 @@ const request = {
 		if(typeof header == 'undefined' || !header) header = {};
 		if(path.indexOf(this.getBaseUrl()) == 0){
 			header['X-Requested-With'] = 'XMLHttpRequest';
-			header['Authorization'] = 'Bearer '+token;
+			header['Authorization'] = token;
 			/*this.isStopRquest = token ? false : true;
 			var pages = getCurrentPages();
 			
@@ -81,14 +81,14 @@ const request = {
 				if((_this.isStopRquest && !white)){
 					return;
 				}
-				if(res.statusCode == 401){
+				if(res.statusCode == 401 || res.data.code == 401){
 					if(!uni.getStorageSync("token")){
 						return;
 					}
 					uni.getStorageSync("token",null);
 					
 					var pages = getCurrentPages();
-					if(pages && pages.length && pages[0].route == 'pages/login/login'){
+					if(pages && pages.length && pages[0].route == '/pages/login/login'){
 						return;
 					}
 					
@@ -103,7 +103,7 @@ const request = {
 							})
 						}
 					})
-				}else if(res.statusCode == 200 || res.statusCode == 201){
+				}else if(res.data.code == 200 || res.data.code == 201){
 					if(typeof result.success == 'function'){
 						result.success(res.data);
 					}
@@ -111,10 +111,10 @@ const request = {
 					uni.showToast({
 						icon:"none",
 						duration:2000,
-						title:res.data.message ? res.data.message : '数据请求出错'
+						title:res.data.msg ? res.data.msg : '数据请求出错'
 					});
 					if(typeof result.fail == 'function'){
-						result.fail({message:'数据请求出错',data:null,code:res.statusCode});
+						result.fail({message:res.data.msg ? res.data.msg : '数据请求出错',data:null,code:res.data.code});
 					}
 				}
 			},

@@ -29,7 +29,7 @@
             "path" : "pages/my/my",
             "style" :                                                                                    
             {
-                "navigationBarTitleText": "",
+                "navigationBarTitleText": "用户中心",
                 "enablePullDownRefresh": false
             }
             
@@ -48,6 +48,24 @@
             "style" :                                                                                    
             {
                 "navigationBarTitleText": "视频列表",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/login/login",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "登陆",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/register/register",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "注册",
                 "enablePullDownRefresh": false
             }
             
