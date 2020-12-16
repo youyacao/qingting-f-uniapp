@@ -2,7 +2,7 @@
 	<view class="content">
 		<view class="login-box">
 			<view class="logo-box">
-				<image class="logo-image" src="@/static/images/no_image.jpg"></image>
+				<image class="logo-image" src="@/static/images/logo.png"></image>
 			</view>
 			<view class="form-item-box">
 				<input v-model="formData.username" class="input-box" placeholder="请输入用户名/手机号" />
