@@ -1,7 +1,19 @@
 <script>
+	import {getUser} from "@/js_sdk/user.js"
+	
 	export default {
 		onLaunch: function() {
 			console.log('App Launch')
+			// 保持屏幕常亮
+			uni.setKeepScreenOn({
+			    keepScreenOn: true
+			})
+			//获取用户信息
+			getUser().then(res=>{
+				this.$store.dispatch("userInfo",res.data)
+			}).catch(error=>{
+				console.log(error)
+			})
 			//强制竖屏，禁止横屏
 			plus.screen.lockOrientation('portrait-primary')
 			const info = uni.getSystemInfoSync()

@@ -11,7 +11,7 @@
 				<input v-model="formData.password" class="input-box" password="password" placeholder="请输入登陆密码" />
 			</view>
 			<view class="form-item-box">
-				<view class="submit-button" hover-class="button-hover">
+				<view class="submit-button" hover-class="button-hover" @click="onSubmit()">
 					<text class="submit-button-text">立即登陆</text>
 				</view>
 			</view>
@@ -26,6 +26,7 @@
 </template>
 
 <script>
+	import {login,getUser} from "@/js_sdk/user.js"
 	export default {
 		data() {
 			return {
@@ -42,6 +43,45 @@
 			goReg(){
 				uni.navigateTo({
 					url:"/pages/register/register"
+				})
+			},
+			onSubmit(){
+				uni.hideKeyboard()
+				if(!this.formData.username){
+					uni.showToast({
+						icon:"none",
+						title:"请输入用户名"
+					})
+					return
+				}
+				if(!this.formData.password){
+					uni.showToast({
+						icon:"none",
+						title:"请输入登陆密码"
+					})
+					return
+				}
+				uni.showLoading({
+					mask:true,
+					title:"正在登陆"
+				})
+				login(this.formData).then(res=>{
+					uni.setStorageSync("token",res.data.token)
+					uni.setStorageSync("expires_in",Date.now() + res.data.expires_in)
+					uni.showLoading({
+						mask:true,
+						title:"正在登陆"
+					})
+					getUser().then(_res=>{
+						this.$store.dispatch("userInfo",_res.data)
+						uni.navigateBack({
+							delta:1
+						})
+					}).catch(error=>{
+						console.log(error)
+					})
+				}).catch(error=>{
+					console.log(error)
 				})
 			}
 		}

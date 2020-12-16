@@ -108,11 +108,14 @@ const request = {
 						result.success(res.data);
 					}
 				}else{
-					uni.showToast({
-						icon:"none",
-						duration:2000,
-						title:res.data.msg ? res.data.msg : '数据请求出错'
-					});
+					if(!white){
+						uni.showToast({
+							icon:"none",
+							duration:2000,
+							title:res.data.msg ? res.data.msg : '数据请求出错'
+						});
+					}
+					
 					if(typeof result.fail == 'function'){
 						result.fail({message:res.data.msg ? res.data.msg : '数据请求出错',data:null,code:res.data.code});
 					}

@@ -47,6 +47,7 @@
 				})
 			},
 			onSubmit(){
+				uni.hideKeyboard()
 				if(!this.formData.username){
 					uni.showToast({
 						icon:"none",
@@ -71,7 +72,13 @@
 					return
 				}
 				register(this.formData).then(res=>{
-					console.log(res)
+					uni.showModal({
+						title:"提示",
+						showCancel:false,
+						success:() => {
+							this.goBack()
+						}
+					})
 				}).catch(error=>{
 					console.log(error)
 				})

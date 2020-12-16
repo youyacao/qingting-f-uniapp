@@ -8,6 +8,7 @@
 	import {
 		mapGetters
 	} from 'vuex'
+	import {getUser} from "@/js_sdk/user.js"
 	
 	export default {
 		data() {
@@ -26,6 +27,11 @@
 				})
 				return
 			}
+			getUser().then(res=>{
+				this.$store.dispatch("userInfo",res.data)
+			}).catch(error=>{
+				console.log(error)
+			})
 		},
 		methods: {
 			
