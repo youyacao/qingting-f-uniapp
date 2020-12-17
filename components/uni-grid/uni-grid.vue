@@ -1,6 +1,6 @@
 <template>
 	<view class="uni-grid-wrap">
-		<view :id="elId" ref="uni-grid" class="uni-grid" :class="{ 'uni-grid--border': showBorder }" :style="{ 'border-left-style':'solid','border-left-color':borderColor, 'border-left-width':showBorder?'1px':0 }">
+		<view :id="elId" ref="uni-grid" class="uni-grid" :class="{ 'uni-grid--border': showBorder && !hideOuterBorder }" :style="{ 'border-left-style':'solid','border-left-color':borderColor, 'border-left-width':showBorder && !hideOuterBorder?'1px':0 }">
 			<slot />
 		</view>
 	</view>
@@ -22,6 +22,11 @@
 			showBorder: {
 				type: Boolean,
 				default: true
+			},
+			//影藏外边框
+			hideOuterBorder: {
+				type: Boolean,
+				default: false
 			},
 			// 边框颜色
 			borderColor: {

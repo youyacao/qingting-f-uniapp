@@ -1,7 +1,7 @@
 <template>
 	<view v-if="width" :style="'width:'+width+';'+(square?'height:'+width:'')" class="uni-grid-item">
 		<view :class="{ 'uni-grid-item--border': showBorder,  'uni-grid-item--border-top': showBorder && index < column, 'uni-highlight': highlight }"
-		 :style="{  'border-right-color': borderColor ,'border-bottom-color': borderColor ,'border-top-color': borderColor }"
+		 :style="{  'border-right-color': borderColor,'border-right-width':(index>0  && index%column == 0 && hideOuterBorder) || !showBorder ? 0 : '1px','border-bottom-color': borderColor ,'border-top-color': borderColor }"
 		 class="uni-grid-item__box" @click="_onClick">
 			<slot />
 		</view>
@@ -24,6 +24,7 @@
 				showBorder: true,
 				square: true,
 				highlight: true,
+				hideOuterBorder:false,
 				left: 0,
 				top: 0,
 				openNum: 2,
@@ -34,6 +35,7 @@
 		created() {
 			this.column = this.grid.column
 			this.showBorder = this.grid.showBorder
+			this.hideOuterBorder = this.grid.hideOuterBorder
 			this.square = this.grid.square
 			this.highlight = this.grid.highlight
 			this.top = this.hor === 0 ? this.grid.hor : this.hor

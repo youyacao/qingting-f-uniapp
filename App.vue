@@ -36,5 +36,8 @@
 
 <style>
 	/*每个页面公共css */
-	
+	.blank-height{
+		height: 20rpx;
+		background-color: #000000;
+	}
 </style>
