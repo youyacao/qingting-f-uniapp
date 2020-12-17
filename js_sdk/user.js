@@ -9,5 +9,9 @@ export function login(data){
 }
 
 export function getUser(){
-	return request.post("user",{})
+	return request.post("user",{},null,true)
+}
+
+export function sendSms(data){
+	return request.post("smsGet",data)
 }

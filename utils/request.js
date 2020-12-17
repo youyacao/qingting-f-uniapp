@@ -81,7 +81,7 @@ const request = {
 				if((_this.isStopRquest && !white)){
 					return;
 				}
-				if(res.statusCode == 401 || res.data.code == 401){
+				if(res.data.code == 500 && res.data.msg.indexOf("token")>0 && !white){
 					if(!uni.getStorageSync("token")){
 						return;
 					}
@@ -92,16 +92,8 @@ const request = {
 						return;
 					}
 					
-					//会话过期
-					uni.showModal({
-						title:"提示",
-						showCancel:false,
-						content:res.data.message || '登陆已过期',
-						success() {
-							uni.redirectTo({
-								url:"/pages/login/login"
-							})
-						}
+					uni.navigateTo({
+						url:"/pages/login/login"
 					})
 				}else if(res.data.code == 200 || res.data.code == 201){
 					if(typeof result.success == 'function'){

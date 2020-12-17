@@ -5,7 +5,7 @@
 				<image class="logo-image" src="@/static/images/logo.png"></image>
 			</view>
 			<view class="form-item-box">
-				<input v-model="formData.username" class="input-box" placeholder="请输入用户名/手机号" />
+				<input v-model="formData.username" type="number" class="input-box" placeholder="请输入手机号" />
 			</view>
 			<view class="form-item-box">
 				<input v-model="formData.password" class="input-box" password="password" placeholder="请输入登陆密码" />
@@ -50,7 +50,7 @@
 				if(!this.formData.username){
 					uni.showToast({
 						icon:"none",
-						title:"请输入用户名"
+						title:"请输入手机号"
 					})
 					return
 				}

@@ -2,7 +2,12 @@
 	<view class="content">
 		<view class="login-box">
 			<view class="form-item-box">
-				<input v-model="formData.username" class="input-box" placeholder="请输入用户名" />
+				<input v-model="formData.phone" class="input-box" type="number" placeholder="请输入手机号" />
+			</view>
+			<view class="form-item-box line-box">
+				<input v-model="formData.code" class="input-box" type="number" placeholder="请输入验证码" />
+				<text class="yzcode-wating" v-if="daojishi>0">{{daojishi}}秒后可重试</text>
+				<text class="yzcode-box" @click="onSendSms" v-else>发送验证码</text>
 			</view>
 			<view class="form-item-box">
 				<input v-model="formData.password" class="input-box" :password="true" placeholder="请输入登陆密码" />
@@ -26,15 +31,18 @@
 </template>
 
 <script>
-	import {register} from "@/js_sdk/user.js"
+	import {register,sendSms} from "@/js_sdk/user.js"
 	export default {
 		data() {
 			return {
 				formData:{
-					username:null,
+					phone:null,
+					code:"",
 					password:"",
 					repassword:""
-				}
+				},
+				daojishi:0,
+				isSendingCode:false
 			}
 		},
 		onShow() {
@@ -48,10 +56,10 @@
 			},
 			onSubmit(){
 				uni.hideKeyboard()
-				if(!this.formData.username){
+				if(!this.formData.phone){
 					uni.showToast({
 						icon:"none",
-						title:"请输入用户名"
+						title:"请输入手机号"
 					})
 					return
 				}
@@ -74,12 +82,50 @@
 				register(this.formData).then(res=>{
 					uni.showModal({
 						title:"提示",
+						content:"恭喜注册成功",
 						showCancel:false,
 						success:() => {
 							this.goBack()
 						}
 					})
 				}).catch(error=>{
+					console.log(error)
+				})
+			},
+			onSendSms(){
+				if(this.isSendingCode){
+					return
+				}
+				if(!this.formData.phone){
+					uni.showToast({
+						icon:"none",
+						title:"请输入手机号"
+					})
+					return
+				}
+				this.isSendingCode = true
+				uni.hideKeyboard()
+				uni.showLoading({
+					title:"正在发送"
+				})
+				sendSms({
+					phone:this.formData.phone,
+					no_captcha:0
+				}).then(res=>{
+					uni.showToast({
+						title:res.msg
+					})
+					this.daojishi = 60
+					var timer = setInterval(()=>{
+						this.daojishi--
+						if(this.daojishi<=0){
+							this.isSendingCode = false
+							this.daojishi = 0
+							clearInterval(timer)
+						}
+					},1000)
+				}).catch(error=>{
+					this.isSendingCode = false
 					console.log(error)
 				})
 			}
@@ -106,6 +152,7 @@
 }
 
 .input-box{
+	flex: 1;
 	background-color:#1c1c1c;
 	border-radius: 10rpx;
 	height: 90rpx;
@@ -138,6 +185,28 @@
 }
 .reglink-link{
 	color: #f42c2c;
+	font-size: $uni-font-size-base;
+}
+.line-box{
+	flex-direction: row;
+	align-items: center;
+}
+.yzcode-box{
+	color: #FFFFFF;
+	background-color: #DD524D;
+	border-radius: 10rpx;
+	margin-left: 10rpx;
+	padding: 30rpx 20rpx;
+	text-align: center;
+	font-size: $uni-font-size-base;
+}
+.yzcode-wating{
+	color: #555555;
+	background-color: #C8C7CC;
+	border-radius: 10rpx;
+	margin-left: 10rpx;
+	padding: 30rpx 20rpx;
+	text-align: center;
 	font-size: $uni-font-size-base;
 }
 </style>
