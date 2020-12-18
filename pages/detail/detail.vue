@@ -38,13 +38,14 @@
 					<text class="subtitle-text">{{videoInfo.subtitle}}</text>
 				</view>
 				<view class="tool-box">
-					<view class="tool-item">
-						<text class="icon-font icon">&#xe651;</text>
+					<view class="tool-item" @click="onAddcollect(videoInfo)">
+						<text class="icon-font icon" v-if="videoInfo.is_collect">&#xe607;</text>
+						<text class="icon-font icon" v-else>&#xe651;</text>
 						<text class="text">片单</text>
 					</view>
 					<view class="tool-item">
 						<text class="icon-font icon">&#xe756;</text>
-						<text class="text">评价</text>
+						<text class="text">点赞</text>
 					</view>
 					<view class="tool-item">
 						<text class="icon-font icon">&#xe600;</text>
@@ -71,6 +72,11 @@
 			<view class="title">影评</view>
 			<view class="comment-list">暂无内容</view>
 		</view>
+		<view style="height: 120rpx;" v-if="userInfo"></view>
+		<view class="add-comment" v-if="userInfo" @click="goToAddcomment">
+			<image :src="userInfo.avatar" class="avatar-image"></image>
+			<text class="add-comment-text">我来发个影评~</text>
+		</view>
 	</view>
 </template>
 
@@ -78,7 +84,7 @@
 	import {
 		mapGetters
 	} from 'vuex'
-	import {getVideo,getVideoList} from "@/js_sdk/video.js"
+	import {getVideo,getVideoList,addCollect,removeCollect} from "@/js_sdk/video.js"
 	export default {
 		data() {
 			return {
@@ -93,7 +99,7 @@
 			}
 		},
 		computed:{
-			...mapGetters(["video"])
+			...mapGetters(["userInfo","video"])
 		},
 		onLoad(options) {
 			this.vid = options.id
@@ -111,7 +117,7 @@
 		},
 		methods: {
 			loadViedoInfo(){
-				getVideo(this.vid).then(res=>{
+				getVideo(this.vid).then(res=>{console.log(res)
 					this.videoInfo = res.data
 					this.videoTitle = this.videoInfo.title
 					uni.setNavigationBarTitle({
@@ -168,6 +174,49 @@
 					this.videoUrl = this.videoList[this.playIndex].url
 					this.player.play()
 				}
+			},
+			goToLogin(){
+				uni.navigateTo({
+					url:"/pages/login/login"
+				})
+			},
+			onAddcollect(info){
+				if(!this.userInfo){
+					this.goToLogin()
+					return
+				}
+				if(info.is_collect){
+					removeCollect({
+						vid:info.id,
+						type:4
+					}).then(res=>{
+						info.is_collect = 1
+						uni.showToast({
+							title:res.msg
+						})
+					}).catch(error=>{
+						console.log(error)
+					})
+				}else{
+					addCollect({
+						vid:info.id,
+						type:4
+					}).then(res=>{
+						info.is_collect = 1
+						uni.showToast({
+							title:res.msg
+						})
+					}).catch(error=>{
+						console.log(error)
+					})
+				}
+				
+			},
+			goToAddcomment(){
+				uni.navigateTo({
+					url:"/pages/addComment/addComment",
+					animationType:"slide-in-bottom"
+				})
 			}
 		}
 	}
@@ -315,5 +364,29 @@
 .comment-box .comment-list{
 	padding: 20rpx 0;
 	color: #F8F8F8;
+}
+.add-comment{
+	position: fixed;
+	display: flex;
+	flex-direction: row;
+	background-color: #2e2e2f;
+	width: 750rpx;
+	height: 100rpx;
+	bottom: 0rpx;
+	justify-content: center;
+	align-items: center;
+}
+.avatar-image{
+	width: 60rpx;
+	height: 60rpx;
+	border-radius: 60rpx;
+	border-width: 2px;
+	border-style: solid;
+	border-color: #00a3ff;
+}
+.add-comment-text{
+	color: #C8C7CC;
+	font-size: $uni-font-size-base;
+	margin-left: 30rpx;
 }
 </style>

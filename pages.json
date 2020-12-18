@@ -21,6 +21,7 @@
             "style" :                                                                                    
             {
                 "navigationBarTitleText": "",
+				"navigationStyle":"custom",
                 "enablePullDownRefresh": false
             }
             
@@ -70,6 +71,15 @@
             }
             
         }
+        ,{
+            "path" : "pages/addComment/addComment",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "发布到影评",
+                "enablePullDownRefresh": false
+            }
+            
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "white",
@@ -81,7 +91,7 @@
 		"color": "#7b7b7b",
 		"selectedColor": "#ff1337",
 		"borderStyle": "black",
-		"backgroundColor": "#1c1c1c",
+		"backgroundColor": "#0e0e0e",
 		"list": [{
 			"pagePath": "pages/index/index",
 			"iconPath": "static/tabbar/home.png",

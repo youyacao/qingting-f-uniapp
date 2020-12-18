@@ -1,22 +1,55 @@
 <template>
-	<view>
-		
+	<view style="flex: 1;">
+		<view class="top-tab-box">
+			<view :style="{height:statusBarHeight+'px'}"></view>
+			<my-tab 
+				:current="tabIndex" 
+				:list="tabList" 
+				@change="onTabchange" 
+				height="100rpx" 
+				color="#C8C7CC" 
+				activedColor="#e4284b"
+				underLineColor="#e4284b"></my-tab>
+		</view>
+		<swiper class="page-content" :current="tabIndex" @change="onSwiperChange">
+			<swiper-item>1</swiper-item>
+			<swiper-item>2</swiper-item>
+			<swiper-item>3</swiper-item>
+		</swiper>
 	</view>
 </template>
 
 <script>
+	import {
+		mapGetters
+	} from 'vuex'
 	export default {
 		data() {
 			return {
-				
+				tabIndex:1,
+				tabList:[{"title":"最新"},{"title":"推荐"},{"title":"关注"}]
 			}
 		},
+		computed: {
+			...mapGetters(['statusBarHeight', 'pageInfo'])
+		},
 		methods: {
-			
+			onTabchange(e){
+				this.tabIndex = e.index
+			},
+			onSwiperChange({detail}){
+				this.tabIndex = detail.current
+			}
 		}
 	}
 </script>
 
 <style>
-
+.top-tab-box{
+	padding:0 20rpx;
+	background-color: #000000;
+}
+.page-content{
+	flex: 1;
+}
 </style>

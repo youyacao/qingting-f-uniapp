@@ -24,6 +24,12 @@
 				width:info.windowWidth,
 				height:info.windowHeight
 			})
+			
+			let domModule = weex.requireModule('dom')
+			domModule.addRule('fontFace', {
+			  'fontFamily': "iconfont2",
+			  src: "url('https://at.alicdn.com/t/font_1955254_c35do17vg4a.ttf')"
+			})
 		},
 		onShow: function() {
 			console.log('App Show')
@@ -39,5 +45,10 @@
 	.blank-height{
 		height: 20rpx;
 		background-color: #000000;
+	}
+	/*每个页面公共css */
+	.icon-font {
+	  font-family:iconfont2;
+	  font-size: 16px;
 	}
 </style>

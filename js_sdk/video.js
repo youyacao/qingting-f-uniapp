@@ -11,3 +11,11 @@ export function getVideoList(id){
 export function searchVideo(data){
 	return request.post("movie/list",data)
 }
+
+export function addCollect(data){
+	return request.post("collect/on",data)
+}
+
+export function removeCollect(data){
+	return request.post("collect/off",data)
+}
