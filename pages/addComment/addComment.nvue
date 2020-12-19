@@ -1,22 +1,120 @@
 <template>
 	<view>
-		
+		<view class="input-area">
+			<textarea v-model="formData.content" placeholder="评电影,好比评人生" class="input-box" :maxlength="2000"></textarea>
+		</view>
+		<view class="image-box">
+			<view class="image-item" v-for="(image,index) in imageList" :key="index">
+				<image class="image-style" mode="aspectFill" :src="image"></image>
+			</view>
+			<view class="add-image" @click="onAddimages()" v-if="imageList.length<9">
+				<text class="icon-font add-text">&#xe620;</text>
+			</view>
+		</view>
 	</view>
 </template>
 
 <script>
+	import {uploadImage} from "@/js_sdk/video.js"
 	export default {
 		data() {
 			return {
-				
+				imageList:[],
+				formData:{
+					vid:null,
+					content:"",
+					images:[],
+					uploadedCount:0
+				}
 			}
 		},
+		onLoad(op) {
+			this.formData.vid = op.vid
+		},
+		onNavigationBarButtonTap() {
+			this.onSubmit()
+		},
 		methods: {
-			
+			onAddimages(){
+				uni.chooseImage({
+					count:9 - this.imageList.length,
+					success: (res) => {
+						this.imageList = this.imageList.concat(res.tempFilePaths)
+					}
+				})
+			},
+			onSubmit(){
+				if(!this.formData.content){
+					uni.showToast({
+						icon:"none",
+						title:"请填写影评内容"
+					})
+					return
+				}
+				if(this.imageList.length){
+					for(var i = 0;i<this.imageList.length;i++){
+						var file = this.imageList[i]
+						uploadImage({
+							filePath:file
+						}).then(res=>{
+							this.uploadedCount++
+							this.formData.images.push(res.data.img_url)
+							if(this.uploadedCount == this.imageList.length){
+								this.doPublish()
+							}
+						}).catch(error=>{
+							this.uploadedCount++
+							console.log(error)
+						})
+					}
+				}else{
+					this.doPublish()
+				}
+			},
+			doPublish(){
+				
+			}
 		}
 	}
 </script>
 
-<style>
-
+<style lang="scss" scoped>
+.input-area{
+	padding: 20rpx;
+}
+.input-box{
+	font-size: $uni-font-size-base;
+	color: #FFFFFF;
+	padding: 12rpx 0rpx;
+}
+.image-box{
+	padding: 20rpx;
+	flex-direction: row;
+	flex-wrap: wrap;
+}
+.add-image{
+	width: 218rpx;
+	height: 120rpx;
+	background-color: #232323;
+	margin: 10rpx;
+	border-radius: 10rpx;
+	border-width: 1px;
+	border-color: #555555;
+	justify-content: center;
+	align-items: center;
+}
+.add-text{
+	font-size: 40rpx;
+	color: #C0C0C0;
+}
+.image-item{
+	width: 218rpx;
+	height: 120rpx;
+	margin: 10rpx;
+}
+.image-style{
+	width: 218rpx;
+	height: 120rpx;
+	border-radius: 10rpx;
+}
 </style>

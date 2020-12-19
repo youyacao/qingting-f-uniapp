@@ -19,3 +19,15 @@ export function addCollect(data){
 export function removeCollect(data){
 	return request.post("collect/off",data)
 }
+
+export function addLike(data){
+	return request.post("like/on",data)
+}
+
+export function removeLike(data){
+	return request.post("like/off",data)
+}
+
+export function uploadImage(data){
+	return request.upload("upload",data)
+}

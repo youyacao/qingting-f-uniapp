@@ -178,23 +178,19 @@ const request = {
 						console.log("返回的不是JSON对象")
 					}
 				}
-				if(res.statusCode == 401){
-					//store.dispatch("token",null);
-					uni.setStorageSync("token",null);
+				if(res.data.code == 500 && res.data.msg.indexOf("token")>0 && !white){
+					if(!uni.getStorageSync("token")){
+						return;
+					}
+					uni.getStorageSync("token",null);
 					
 					var pages = getCurrentPages();
-					if(pages && pages.length && pages[0].route == 'pages/login/login'){
+					if(pages && pages.length && pages[0].route == '/pages/login/login'){
 						return;
 					}
 					
-					uni.redirectTo({
+					uni.navigateTo({
 						url:"/pages/login/login"
-					})
-					//会话过期
-					uni.showModal({
-						title:"提示",
-						showCancel:false,
-						content:res.data.message
 					})
 				}else if(res.statusCode == 200 || res.statusCode == 201){
 					if(typeof result.success == 'function'){

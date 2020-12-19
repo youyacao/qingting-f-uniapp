@@ -43,15 +43,16 @@
 						<text class="icon-font icon" v-else>&#xe651;</text>
 						<text class="text">片单</text>
 					</view>
-					<view class="tool-item">
-						<text class="icon-font icon">&#xe756;</text>
+					<view class="tool-item" @click="onAddLike(videoInfo)">
+						<text class="icon-font icon" v-if="videoInfo.is_like">&#xe60c;</text>
+						<text class="icon-font icon" v-else>&#xe756;</text>
 						<text class="text">点赞</text>
 					</view>
-					<view class="tool-item">
+					<view class="tool-item" @click="onShare">
 						<text class="icon-font icon">&#xe600;</text>
 						<text class="text">分享</text>
 					</view>
-					<view class="tool-item">
+					<view class="tool-item" @click="onDownload">
 						<text class="icon-font icon">&#xe625;</text>
 						<text class="text">下载</text>
 					</view>
@@ -84,7 +85,14 @@
 	import {
 		mapGetters
 	} from 'vuex'
-	import {getVideo,getVideoList,addCollect,removeCollect} from "@/js_sdk/video.js"
+	import {
+		getVideo,
+		getVideoList,
+		addCollect,
+		removeCollect,
+		addLike,
+		removeLike
+	} from "@/js_sdk/video.js"
 	export default {
 		data() {
 			return {
@@ -95,7 +103,8 @@
 				videoUrl:null,
 				danmuList:[],
 				player:null,
-				videoTitle:null
+				videoTitle:null,
+				tabList:[]
 			}
 		},
 		computed:{
@@ -130,6 +139,11 @@
 			loadVideoList(){
 				getVideoList(this.vid).then(res=>{
 					this.videoList = res.data.list
+					if(!this.videoList) return
+					this.tabList = []
+					this.videoList.forEach(item=>{
+						this.tabList.push(item.title)
+					})
 				}).catch(error=>{
 					console.log(error)
 				})
@@ -190,7 +204,7 @@
 						vid:info.id,
 						type:4
 					}).then(res=>{
-						info.is_collect = 1
+						info.is_collect = 0
 						uni.showToast({
 							title:res.msg
 						})
@@ -212,9 +226,108 @@
 				}
 				
 			},
+			onAddLike(info){
+				if(!this.userInfo){
+					this.goToLogin()
+					return
+				}
+				if(info.is_like){
+					removeLike({
+						vid:info.id,
+						type:4
+					}).then(res=>{
+						info.is_like = 0
+						uni.showToast({
+							title:res.msg
+						})
+					}).catch(error=>{
+						console.log(error)
+					})
+				}else{
+					addLike({
+						vid:info.id,
+						type:4
+					}).then(res=>{
+						info.is_like = 1
+						uni.showToast({
+							title:res.msg
+						})
+					}).catch(error=>{
+						console.log(error)
+					})
+				}
+				
+			},
+			onShare(){
+				uni.showToast({
+					icon:"none",
+					title:"此功能暂未开放"
+				})
+			},
+			onDownload(){
+				uni.showActionSheet({
+				    itemList: this.tabList,
+				    success:  res =>{
+				        var video = this.videoList[res.tapIndex]
+						if(!video || !video.url){
+							uni.showToast({
+								icon:"none",
+								title:"没有可下载的视频文件"
+							})
+							return
+						}
+						const downloadTask = uni.downloadFile({
+						    url: video.url,
+						    success: (res) => {
+								//console.log(res)
+								uni.hideLoading()
+						        if (res.statusCode === 200) {
+									uni.saveImageToPhotosAlbum({
+									  filePath: res.tempFilePath,
+									  success: (_res) => {
+										console.log(_res)
+									  }
+									});
+						            uni.showToast({
+						            	title:"视频下载成功"
+						            })
+						        }else{
+									uni.showToast({
+										icon:"none",
+										title:"视频下载失败"
+									})
+								}
+						    },
+							fail:res=>{
+								uni.hideLoading()
+								uni.showToast({
+									icon:"none",
+									title:"视频下载出错"
+								})
+							}
+						});
+						
+						downloadTask.onProgressUpdate((res) => {
+							//console.log(res)
+							uni.hideLoading()
+							if(res.progress>=100) return
+							uni.showLoading({
+								mask:true,
+								title:"正在下载" + res.progress + "%"
+							})
+						    //console.log('下载进度' + res.progress);
+						    //console.log('已经下载的数据长度' + res.totalBytesWritten);
+						    //console.log('预期需要下载的数据总长度' + res.totalBytesExpectedToWrite);
+						});
+				    },
+				    fail: res => {
+				        console.log(res.errMsg);
+				    }
+				});
+			},
 			goToAddcomment(){
 				uni.navigateTo({
-					url:"/pages/addComment/addComment",
+					url:"/pages/addComment/addComment?vid="+this.vid,
 					animationType:"slide-in-bottom"
 				})
 			}

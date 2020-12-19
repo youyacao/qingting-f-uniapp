@@ -28,7 +28,7 @@
 			let domModule = weex.requireModule('dom')
 			domModule.addRule('fontFace', {
 			  'fontFamily': "iconfont2",
-			  src: "url('https://at.alicdn.com/t/font_1955254_c35do17vg4a.ttf')"
+			  src: "url('https://at.alicdn.com/t/font_1955254_rjjaie6allr.ttf')"
 			})
 		},
 		onShow: function() {

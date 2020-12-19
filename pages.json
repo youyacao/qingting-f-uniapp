@@ -76,7 +76,18 @@
             "style" :                                                                                    
             {
                 "navigationBarTitleText": "发布到影评",
-                "enablePullDownRefresh": false
+                "enablePullDownRefresh": false,
+				"app-plus":{
+					"titleNView":{
+						"buttons":[
+							{
+								"text":"发布",
+								"fontSize":"18px",
+								"width":"60px"
+							}
+						]
+					}
+				}
             }
             
         }
