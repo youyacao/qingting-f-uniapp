@@ -17,6 +17,7 @@
 			//强制竖屏，禁止横屏
 			plus.screen.lockOrientation('portrait-primary')
 			const info = uni.getSystemInfoSync()
+			
 			//添加状态栏高度
 			this.$store.dispatch("statusBarHeight",info.statusBarHeight)
 			//添加窗口宽高
@@ -28,7 +29,7 @@
 			let domModule = weex.requireModule('dom')
 			domModule.addRule('fontFace', {
 			  'fontFamily': "iconfont2",
-			  src: "url('https://at.alicdn.com/t/font_1955254_rjjaie6allr.ttf')"
+			  src: "url('https://at.alicdn.com/t/font_1955254_47l6dnusbf.ttf')"
 			})
 		},
 		onShow: function() {

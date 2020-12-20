@@ -6,6 +6,7 @@
 		<view class="image-box">
 			<view class="image-item" v-for="(image,index) in imageList" :key="index">
 				<image class="image-style" mode="aspectFill" :src="image"></image>
+				<text class="icon-font delete-btn" @click="onDeleteImage(index)">&#xe638;</text>
 			</view>
 			<view class="add-image" @click="onAddimages()" v-if="imageList.length<9">
 				<text class="icon-font add-text">&#xe620;</text>
@@ -15,21 +16,22 @@
 </template>
 
 <script>
-	import {uploadImage} from "@/js_sdk/video.js"
+	import {uploadImage,addComment} from "@/js_sdk/video.js"
 	export default {
 		data() {
 			return {
 				imageList:[],
+				uploadedCount:0,
 				formData:{
-					vid:null,
+					type:3,
+					oid:null,
 					content:"",
-					images:[],
-					uploadedCount:0
+					images:[]
 				}
 			}
 		},
 		onLoad(op) {
-			this.formData.vid = op.vid
+			this.formData.oid = op.vid
 		},
 		onNavigationBarButtonTap() {
 			this.onSubmit()
@@ -43,7 +45,11 @@
 					}
 				})
 			},
+			onDeleteImage(index){
+				this.imageList.splice(index,1)
+			},
 			onSubmit(){
+				uni.hideKeyboard()
 				if(!this.formData.content){
 					uni.showToast({
 						icon:"none",
@@ -51,6 +57,10 @@
 					})
 					return
 				}
+				uni.showLoading({
+					title:"正在发布",
+					mask:true
+				})
 				if(this.imageList.length){
 					for(var i = 0;i<this.imageList.length;i++){
 						var file = this.imageList[i]
@@ -64,6 +74,9 @@
 							}
 						}).catch(error=>{
 							this.uploadedCount++
+							if(this.uploadedCount == this.imageList.length){
+								this.doPublish()
+							}
 							console.log(error)
 						})
 					}
@@ -72,6 +85,22 @@
 				}
 			},
 			doPublish(){
+				addComment(this.formData).then(res=>{
+					uni.hideLoading()
+					uni.showModal({
+						title:"提示",
+						showCancel:false,
+						content:"影评发布成功",
+						success: () => {
+							uni.navigateBack({
+								delta:1
+							})
+						}
+					})
+				}).catch(error=>{
+					uni.hideLoading()
+					console.log(error)
+				})
 				
 			}
 		}
@@ -116,5 +145,18 @@
 	width: 218rpx;
 	height: 120rpx;
 	border-radius: 10rpx;
+}
+.delete-btn{
+	position: absolute;
+	right: 0rpx;
+	top: 0rpx;
+	border-radius: 40rpx;
+	width: 40rpx;
+	height: 40rpx;
+	font-size: 20rpx;
+	text-align: center;
+	line-height: 40rpx;
+	background-color: rgba(0,0,0,0.7);
+	color: #FFFFFF;
 }
 </style>

@@ -24,7 +24,7 @@
 					<view class="select-row">
 						<scroll-view :scroll-x="true" class="select-row-scroll" :show-scrollbar="false">
 							<text class="select-text"
-							:class="{'select-text-hover':isNoSelect('cate')}"
+							:class="{'select-text-hover':isNoSelect('category_id')}"
 							@click="onSelect('category_id',null)">全部类型</text>
 							<text class="select-text"
 								:class="{'select-text-hover':searchForm.category_id == item.id}" 
@@ -58,7 +58,9 @@
 						</scroll-view>
 					</view>
 				</view>
-				<view class="nodata-box" v-if="this.videoList.length == 0">
+			</header>
+			<header v-if="this.videoList.length == 0 && !loading">
+				<view class="nodata-box">
 					<text class="nodata-text">暂无数据</text>
 				</view>
 			</header>
@@ -70,7 +72,7 @@
 				</view>
 			</cell>
 			
-			<loading class="loading-box" @loading="onloading" :display="loadinging ? 'show' : 'hide'">
+			<loading class="loading-box" @loading="onloading" :display="loading ? 'show' : 'hide'">
 				<loading-indicator></loading-indicator>
 				<text class="load-text">加载中</text>
 			</loading>
@@ -100,7 +102,7 @@
 				videoList:[],
 				total_page:0,
 				current_page:1,
-				loadinging:false
+				loading:false
 			}
 		},
 		computed: {
@@ -120,14 +122,14 @@
 			},
 			getList(){
 				this.searchForm.page = this.current_page
-				
+				this.loading = true
 				searchVideo(this.searchForm).then(res=>{
-					this.loadinging = false
+					this.loading = false
 					this.total_page = res.total_page
 					this.current_page = res.current_page
 					this.videoList = this.videoList.concat(res.data.list)
 				}).catch(error=>{
-					this.loadinging = false
+					this.loading = false
 					console.log(error)
 				})
 			},
@@ -154,7 +156,6 @@
 				})
 			},
 			onloading(){
-				this.loadinging = true
 				this.current_page++
 				this.getList()
 			}

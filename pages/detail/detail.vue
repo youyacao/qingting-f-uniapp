@@ -91,7 +91,8 @@
 		addCollect,
 		removeCollect,
 		addLike,
-		removeLike
+		removeLike,
+		getComment
 	} from "@/js_sdk/video.js"
 	export default {
 		data() {

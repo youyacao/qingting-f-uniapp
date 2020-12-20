@@ -31,3 +31,11 @@ export function removeLike(data){
 export function uploadImage(data){
 	return request.upload("upload",data)
 }
+
+export function addComment(data){
+	return request.post("article/add",data)
+}
+
+export function getComment(data){
+	return request.post("article/list",data)
+}
