@@ -7,3 +7,7 @@ export function category(){
 export function hotVideo(){
 	return request.post("movie/index",null)
 }
+
+export function getLanchAd(){
+	return request.post("advert/list",{type:1})
+}

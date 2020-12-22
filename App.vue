@@ -1,8 +1,12 @@
 <script>
 	import {getUser} from "@/js_sdk/user.js"
+	import {getLanchAd} from "@/js_sdk/index.js"
+	import NativeUI from "viewapi/NativeUI.js"
 	
 	export default {
 		onLaunch: function() {
+			
+			
 			console.log('App Launch')
 			// 保持屏幕常亮
 			uni.setKeepScreenOn({
@@ -24,6 +28,96 @@
 			this.$store.dispatch("pageInfo",{
 				width:info.windowWidth,
 				height:info.windowHeight
+			})
+			
+			//显示启动广告，先把默认启动图关闭
+			plus.navigator.closeSplashscreen()
+			var view = new NativeUI.Swiper("launch_swiper",{current:1,repeat:false,bounce:false})
+			
+			var adlist = []
+			try{
+				adlist = JSON.parse(uni.getStorageSync("ad_list"))
+			}catch(e){
+				console.log(e)
+			}
+
+			view.addImages(adlist && adlist.length ? adlist : [{
+				src:"static/images/1080x1920.png"
+			}])
+			view.show()
+			view.addEventListener("click",({current})=>{
+				if(!current['url']) return
+				if(current.url.indexOf("http") == 0){
+					plus.runtime.openURL(current.url)
+					return
+				}
+				if(current.url.indexOf("/pages/") == 0){
+					clearInterval(timer)
+					view.hide()
+					uni.navigateTo({
+						url:current.url
+					})
+					return
+				}
+			})
+			
+			let view2 = new NativeUI.View("daojishi");
+			view2.style.width = "120rpx"
+			view2.style.height = "50rpx"
+			view2.style.right = "40rpx"
+			view2.style.top = (info.statusBarHeight + 20) + "px"
+			view2.style.backgroundColor = "rgba(0,0,0,0.7)"
+			view2.style.color = "#FFFFFF"
+			view2.style.borderRadius = "10rpx"
+			view2.innerText = "启动 5S"
+			view2.style.textAlign = "center"
+			view2.style.textValign = "middle"
+			
+			view.appendChild(view2)
+			view2.show()
+			let count = 5
+			let timer = setInterval(()=>{
+				count--
+				if(count<=0){
+					clearInterval(timer)
+					count = 0
+				}
+				view2.innerText = "启动 " + count +"S"
+				if(count == 0){
+					//view.close()
+					view.fadeOut("fast")
+				}
+			},1000)
+			
+			getLanchAd().then(res=>{
+				var list = res.data
+				if(!list) return
+				var adlist = []
+				list.forEach(item=>{
+					if(!item.img_url) return;
+					var length = item.img_url.indexOf("?")
+					if(length != -1) item.img_url = item.img_url.substr(0,length)
+					
+					uni.downloadFile({
+						url:item.img_url,
+						success:(file) => {
+							uni.saveFile({
+							  tempFilePath: file.tempFilePath,
+							  success: function (save) {
+								adlist.push({
+									src:save.savedFilePath,
+									url:item.ad_url
+								})
+								if(adlist.length == list.length){
+									uni.setStorageSync("ad_list",JSON.stringify(adlist))
+								}
+							  }
+							});
+						}
+					})
+				})
+			}).catch(error=>{
+				console.log(error)
 			})
 			
 			let domModule = weex.requireModule('dom')
