@@ -1,9 +1,14 @@
 <template>
 	<view style="flex: 1;">
-		<waterfall style="flex: 1;" column-count="3" column-width="auto" column-gap="0" :bounce="true">
+		<view :style="{height:statusBarHeight + 'px'}"></view>
+		<waterfall style="flex: 1;" column-count="3" column-width="auto" column-gap="0" :bounce="true" @loadmore="onLoadMore">
+			<refresh class="loading-box" @refresh="onPullLoading" @pullingdown="onPulling" :display="pull_loading ? 'show' : 'hide'">
+				<loading-indicator></loading-indicator>
+				<text class="load-text" v-if="pull_loading">正在加载...</text>
+				<text class="load-text" v-else>下拉刷新</text>
+			</refresh>
 			<header style="position: sticky;">
 				<view class="top-box">
-					<view :style="{height:statusBarHeight + 'px'}"></view>
 					<uni-search-bar @confirm="search" @input="input" bgColor="#2f2f2f"></uni-search-bar>
 				</view>
 			</header>
@@ -102,7 +107,8 @@
 				videoList:[],
 				total_page:0,
 				current_page:1,
-				loading:false
+				loading:false,
+				pull_loading:false
 			}
 		},
 		computed: {
@@ -120,21 +126,25 @@
 					console.log(error)
 				})
 			},
-			getList(){
+			getList(replace){
 				this.searchForm.page = this.current_page
-				this.loading = true
+				//console.log(this.searchForm)
 				searchVideo(this.searchForm).then(res=>{
+					this.pull_loading = false
 					this.loading = false
-					this.total_page = res.total_page
-					this.current_page = res.current_page
-					this.videoList = this.videoList.concat(res.data.list)
+					this.total_page = res.data.total_page
+					this.current_page = res.data.current_page
+					this.videoList = replace ? res.data.list : this.videoList.concat(res.data.list)
+					
 				}).catch(error=>{
+					this.pull_loading = false
 					this.loading = false
 					console.log(error)
 				})
 			},
 			search(){
-				this.getList()
+				this.current_page = 1
+				this.getList(true)
 			},
 			input({value}){
 				this.searchForm.keyword = value
@@ -155,9 +165,22 @@
 					url:"/pages/detail/detail?id="+item.id
 				})
 			},
+			onPulling(e){
+				//console.log(e)
+			},
+			onPullLoading(){
+				this.current_page = 1
+				this.pull_loading = true
+				this.getList(true)
+			},
 			onloading(){
+				if(this.loading) return
 				this.current_page++
+				this.loading = true
 				this.getList()
+			},
+			onLoadMore(){
+				this.onloading()
 			}
 		}
 	}

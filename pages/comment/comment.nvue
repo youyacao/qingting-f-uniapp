@@ -12,9 +12,15 @@
 				underLineColor="#e4284b"></my-tab>
 		</view>
 		<swiper class="page-content" :current="tabIndex" @change="onSwiperChange">
-			<swiper-item>1</swiper-item>
-			<swiper-item>2</swiper-item>
-			<swiper-item>3</swiper-item>
+			<swiper-item>
+				<my-comment style="flex: 1;"></my-comment>
+			</swiper-item>
+			<swiper-item>
+				<my-comment style="flex: 1;" :type="1"></my-comment>
+			</swiper-item>
+			<swiper-item>
+				<my-comment style="flex: 1;"></my-comment>
+			</swiper-item>
 		</swiper>
 	</view>
 </template>
@@ -23,6 +29,9 @@
 	import {
 		mapGetters
 	} from 'vuex'
+	import {
+		getComment
+	} from "@/js_sdk/video.js"
 	export default {
 		data() {
 			return {
@@ -32,6 +41,9 @@
 		},
 		computed: {
 			...mapGetters(['statusBarHeight', 'pageInfo'])
+		},
+		onLoad() {
+			
 		},
 		methods: {
 			onTabchange(e){
@@ -44,12 +56,64 @@
 	}
 </script>
 
-<style>
+<style lang="scss" scoped>
+.nodata-box{
+	padding: 20rpx;
+	text-align: center;
+	font-size: $uni-font-size-base;
+	color: #F1F1F1;
+}
 .top-tab-box{
 	padding:0 20rpx;
 	background-color: #000000;
 }
 .page-content{
 	flex: 1;
+}
+.comment-list{
+	padding: 20rpx;
+}
+.comment-item{
+	border-bottom-color: #353535;
+	border-bottom-width: 1px;
+	padding: 20rpx 0;
+}
+.avatar-box{
+	flex-direction: row;
+	align-items: center;
+}
+.avatar-image{
+	width: 80rpx;
+	height: 80rpx;
+	border-radius: 80rpx;
+	border-width: 2px;
+	border-color: #ff7ddd;
+}
+.user-info{
+	flex-direction: column;
+	margin-left: 20rpx;
+}
+.username{
+	font-size: 32rpx;
+	font-weight: bold;
+	color: #F1F1F1;
+}
+.comment-date{
+	font-size: 28rpx;
+	color: #C8C7CC;
+}
+.comment-content{
+	padding: 20rpx 0;
+	font-size: $uni-font-size-base;
+	color: #F1F1F1;
+}
+.comment-image-list{
+	flex-direction: row;
+	flex-wrap: wrap;
+}
+.comment-image{
+	width: 215rpx;
+	height: 215rpx;
+	margin: 10rpx;
 }
 </style>

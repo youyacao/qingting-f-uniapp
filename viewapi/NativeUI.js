@@ -707,19 +707,21 @@ class UI{
 		let height = this.getHeight()
 		
 		if(width !== null) width += "px"
-		if(height !== null && height != 'wrap_content') height += "px"
-		
-		this.__view.setStyle({
-			backgroundColor:this.style.borderRadius ? null : this.style.backgroundColor,
+		if(height !== null && height != 'wrap_content') height = (parseInt(height * 100) /100) + "px"
+		var options = {
+			backgroundColor:this.style.borderRadius ? 'rgba(255,255,255,0)' : this.style.backgroundColor,
+			width:width,
+			height:height,
 			top:top,
 			left:left,
 			right:right,
-			bottom:bottom,
 			opacity:this.style.opacity !== null ? this.style.opacity : 1,
-			width:width,
-			height:height,
 			position:this.style.position
-		})
+		}
+		if(!height || height == 'wrap_content'){
+			options['bottom'] = bottom
+		}
+		this.__view.setStyle(options)
 		if(this.style.borderRadius){
 			this.clear()
 			this.__view.drawRect({

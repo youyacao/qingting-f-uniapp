@@ -1,0 +1,22 @@
+<template>
+	<view style="flex: 1;">
+		<my-comment style="flex: 1;"></my-comment>
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				
+			}
+		},
+		methods: {
+			
+		}
+	}
+</script>
+
+<style>
+
+</style>

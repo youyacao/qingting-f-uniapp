@@ -5,7 +5,10 @@ export function category(){
 }
 
 export function hotVideo(){
-	return request.post("movie/index",null)
+	return request.post("movie/index",{
+		limit:9,
+		order:5
+	})
 }
 
 export function getLanchAd(){

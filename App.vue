@@ -30,8 +30,6 @@
 				height:info.windowHeight
 			})
 			
-			//显示启动广告，先把默认启动图关闭
-			plus.navigator.closeSplashscreen()
 			var view = new NativeUI.Swiper("launch_swiper",{current:1,repeat:false,bounce:false})
 			
 			var adlist = []
@@ -65,7 +63,7 @@
 			view2.style.width = "120rpx"
 			view2.style.height = "50rpx"
 			view2.style.right = "40rpx"
-			view2.style.top = (info.statusBarHeight + 20) + "px"
+			view2.style.top = (info.statusBarHeight + 10) + "px"
 			view2.style.backgroundColor = "rgba(0,0,0,0.7)"
 			view2.style.color = "#FFFFFF"
 			view2.style.borderRadius = "10rpx"
@@ -88,6 +86,8 @@
 					view.fadeOut("fast")
 				}
 			},1000)
+			//显示启动广告，显示后把默认启动图关闭
+			plus.navigator.closeSplashscreen()
 			
 			getLanchAd().then(res=>{
 				var list = res.data

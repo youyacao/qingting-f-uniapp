@@ -71,12 +71,30 @@
 		</view>
 		<view class="comment-box">
 			<view class="title">影评</view>
-			<view class="comment-list">暂无内容</view>
+			<view class="comment-list">
+				<text v-if="!commentData || commentData.list.length == 0">暂无内容</text>
+				<view v-else class="comment-item" v-for="(comment,index) in commentData.list" :key="comment.id">
+					<view class="avatar-box">
+						<image class="avatar-image" :src="comment.avatar"></image>
+						<view class="user-info">
+							<text class="username">{{comment.nickname ? comment.nickname : comment.username}}</text>
+							<text class="comment-date">{{comment.mtime}}</text>
+						</view>
+					</view>
+					<view class="comment-content">{{comment.content}}</view>
+					<view class="comment-image-list" v-if="comment.images">
+						<image :src="image" class="comment-image" v-for="(image,_index) in comment.images" @click="onPreimages(comment.images,_index)"></image>
+					</view>
+				</view>
+			</view>
 		</view>
-		<view style="height: 120rpx;" v-if="userInfo"></view>
+		<view style="height: 120rpx;"></view>
 		<view class="add-comment" v-if="userInfo" @click="goToAddcomment">
 			<image :src="userInfo.avatar" class="avatar-image"></image>
 			<text class="add-comment-text">我来发个影评~</text>
+		</view>
+		<view class="add-comment" v-else @click="goToLogin()">
+			<text class="add-comment-text">登陆后可发表影评~</text>
 		</view>
 	</view>
 </template>
@@ -105,7 +123,8 @@
 				danmuList:[],
 				player:null,
 				videoTitle:null,
-				tabList:[]
+				tabList:[],
+				commentData:null
 			}
 		},
 		computed:{
@@ -124,10 +143,11 @@
 				})
 				this.$store.dispatch("video",null)
 			}
+			this.getCommentList()
 		},
 		methods: {
 			loadViedoInfo(){
-				getVideo(this.vid).then(res=>{console.log(res)
+				getVideo(this.vid).then(res=>{//console.log(res)
 					this.videoInfo = res.data
 					this.videoTitle = this.videoInfo.title
 					uni.setNavigationBarTitle({
@@ -331,6 +351,41 @@
 					url:"/pages/addComment/addComment?vid="+this.vid,
 					animationType:"slide-in-bottom"
 				})
+			},
+			getCommentList(replace){
+				getComment({
+					type:3,
+					oid:this.vid,
+					page:this.commentData ? this.commentData.current_page : 1
+				}).then(res=>{
+					if(replace){
+						this.commentData = res.data
+					}else{
+						if(!this.commentData){
+							this.commentData = res.data
+						}else{
+							this.commentData.list = this.commentData.list.concat(res.data.list)
+						}
+					}
+					
+					//console.log(res)
+				}).catch(error=>{
+					console.log(error)
+				})
+			},
+			onPreimages(images,index){
+				var list = []
+				for(var i=0;i<images.length;i++){
+					var item = images[i]
+					if(!item) continue
+					var length = item.indexOf("?")
+					list.push(length == -1 ? item : item.substr(0,length))
+				}
+				
+				uni.previewImage({
+					current:index,
+					urls:list
+				})
 			}
 		}
 	}
@@ -450,6 +505,9 @@
 }
 .video-list-box .list-box{
 	padding: 20rpx 0rpx;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
 }
 .video-list-box .list-box .text{
 	color: #F1F1F1;
@@ -502,5 +560,44 @@
 	color: #C8C7CC;
 	font-size: $uni-font-size-base;
 	margin-left: 30rpx;
+}
+.comment-item{
+	border-bottom: #353535 1px solid;
+	padding: 20rpx 0;
+}
+.avatar-box{
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+.avatar-box .avatar-image{
+	width: 80rpx;
+	height: 80rpx;
+	border-radius: 80rpx;
+	border-color: #ff7ddd;
+}
+.user-info{
+	display: flex;
+	flex-direction: column;
+	margin-left: 20rpx;
+}
+.user-info .username{
+	font-size: 32rpx;
+	font-weight: bold;
+}
+.user-info .comment-date{
+	font-size: 28rpx;
+	color: #C8C7CC;
+}
+.comment-content{
+	padding: 20rpx 0;
+}
+.comment-image-list{
+	
+}
+.comment-image-list .comment-image{
+	width: 215rpx;
+	height: 215rpx;
+	margin: 10rpx;
 }
 </style>

@@ -3,7 +3,8 @@
 		{
 			"path": "pages/index/index",
 			"style": {
-				"navigationBarTitleText": "蜻蜓影视"
+				"navigationBarTitleText": "蜻蜓影视",
+				"enablePullDownRefresh":true
 			}
 		}
 	    ,{
@@ -88,6 +89,15 @@
 						]
 					}
 				}
+            }
+            
+        }
+        ,{
+            "path" : "pages/my/comment/comment",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "我的影评",
+                "enablePullDownRefresh": false
             }
             
         }

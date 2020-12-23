@@ -23,7 +23,7 @@
 					<text class="num-text">{{userInfo.follow_num}}</text>
 					<text class="tool-text">粉丝</text>
 				</view>
-				<view class="tool-item">
+				<view class="tool-item" @click="goToPage('/pages/my/comment/comment')">
 					<text class="num-text">{{userInfo.film_review_num}}</text>
 					<text class="tool-text">影评</text>
 				</view>
@@ -101,7 +101,11 @@
 			})
 		},
 		methods: {
-			
+			goToPage(page){
+				uni.navigateTo({
+					url:page
+				})
+			}
 		}
 	}
 </script>

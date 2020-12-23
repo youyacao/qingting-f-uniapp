@@ -34,11 +34,19 @@
 		onLoad() {
 			this.getHot()
 		},
+		onShow() {
+			
+		},
+		onPullDownRefresh() {
+			this.getHot()
+		},
 		methods: {
 			getHot(){
 				hotVideo().then(res=>{
+					uni.stopPullDownRefresh()
 					this.cateList = res.data
 				}).catch(error=>{
+					uni.stopPullDownRefresh()
 					console.log(error)
 				})
 			},

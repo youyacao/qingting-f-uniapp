@@ -48,6 +48,33 @@
 			onDeleteImage(index){
 				this.imageList.splice(index,1)
 			},
+			uploadImages(index){
+				uni.showLoading({
+					title:"正在上传图片",
+					mask:true
+				})
+				var file = this.imageList[index]
+				uploadImage({
+					filePath:file
+				}).then(res=>{
+					//console.log(res)
+					this.uploadedCount++
+					this.formData.images.push(res.data.img_url)
+					if(this.uploadedCount == this.imageList.length){
+						this.doPublish()
+					}else{
+						this.uploadImages(++index)
+					}
+				}).catch(error=>{
+					this.uploadedCount++
+					if(this.uploadedCount == this.imageList.length){
+						this.doPublish()
+					}else{
+						this.uploadImages(++index)
+					}
+					console.log(error)
+				})
+			},
 			onSubmit(){
 				uni.hideKeyboard()
 				if(!this.formData.content){
@@ -62,24 +89,9 @@
 					mask:true
 				})
 				if(this.imageList.length){
-					for(var i = 0;i<this.imageList.length;i++){
-						var file = this.imageList[i]
-						uploadImage({
-							filePath:file
-						}).then(res=>{
-							this.uploadedCount++
-							this.formData.images.push(res.data.img_url)
-							if(this.uploadedCount == this.imageList.length){
-								this.doPublish()
-							}
-						}).catch(error=>{
-							this.uploadedCount++
-							if(this.uploadedCount == this.imageList.length){
-								this.doPublish()
-							}
-							console.log(error)
-						})
-					}
+					this.formData.images = []
+					this.uploadedCount = 0
+					this.uploadImages(0)
 				}else{
 					this.doPublish()
 				}
