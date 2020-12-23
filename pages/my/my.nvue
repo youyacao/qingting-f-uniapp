@@ -67,6 +67,13 @@
 					</view>
 				</uni-grid-item>
 			</uni-grid>
+			
+			
+			
+			<view class="copy">
+				系统开发商：优雅草科技-蜻蜓F影视系统</br>
+				www.youyacao.com
+			</view>
 		</template>
 	</view>
 </template>
@@ -111,11 +118,20 @@
 </script>
 
 <style lang="scss" scoped>
+.copy{
+	    color: #b1acac;
+	    font-size: 12rpx;
+	    margin-top: 50rpx;
+	    	justify-content: space-between;
+			align-items: center;
+}	
+	
 .user-info-box{
 	flex-direction: row;
 	align-items: center;
 	padding: 30rpx 20rpx;
 }
+
 .avatar-image{
 	width: 120rpx;
 	height: 120rpx;
