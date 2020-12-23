@@ -69,10 +69,9 @@
 			</uni-grid>
 			
 			
-			
-			<view class="copy">
-				系统开发商：优雅草科技-蜻蜓F影视系统</br>
-				www.youyacao.com
+			<view style="margin-top: 50rpx;">
+				<text class="copy">系统开发商：优雅草科技-蜻蜓F影视系统</text>
+				<text class="copy">www.youyacao.com</text>
 			</view>
 		</template>
 	</view>
@@ -120,10 +119,8 @@
 <style lang="scss" scoped>
 .copy{
 	    color: #b1acac;
-	    font-size: 12rpx;
-	    margin-top: 50rpx;
-	    	justify-content: space-between;
-			align-items: center;
+	    font-size: 24rpx;
+		text-align: center;
 }	
 	
 .user-info-box{

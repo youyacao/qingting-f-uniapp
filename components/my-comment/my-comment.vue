@@ -1,9 +1,9 @@
 <template>
 	<view style="flex: 1;">
-		<list style="flex: 1;" @loadmore="onLoadMore" :loadmoreoffset="50">
+		<list style="flex: 1;" @loadmore="onLoadMore" :loadmoreoffset="100" ref="list">
 			<cell>
 				<view class="comment-list">
-					<text class="nodata-box" v-if="!commentData || commentData.list.length == 0">暂无内容</text>
+					<text class="nodata-box" v-if="!commentData || commentData.list.length == 0">{{loaded ? '暂无内容' : '正在加载...'}}</text>
 					<view v-else class="comment-item" v-for="(comment,index) in commentData.list" :key="comment.id">
 						<view class="avatar-box">
 							<image class="avatar-image" :src="comment.avatar"></image>
@@ -27,14 +27,20 @@
 	import {
 		getComment
 	} from "@/js_sdk/video.js"
+	
 	export default {
 		data() {
 			return {
-				commentData:null
+				commentData:null,
+				loaded:false
 			};
 		},
 		props:{
 			type:{
+				type:Number,
+				default:0
+			},
+			user_id:{
 				type:Number,
 				default:0
 			}
@@ -47,8 +53,10 @@
 				getComment({
 					type:3,
 					order:this.type,
+					user_id:this.user_id,
 					page:this.commentData ? this.commentData.current_page : 1
 				}).then(res=>{
+					this.loaded = true
 					if(replace){
 						this.commentData = res.data
 					}else{
@@ -58,9 +66,11 @@
 							this.commentData.list = this.commentData.list.concat(res.data.list)
 						}
 					}
+					 this.$refs["list"].resetLoadmore();
 					
 					//console.log(res)
 				}).catch(error=>{
+					this.loaded = true
 					console.log(error)
 				})
 			},
@@ -79,6 +89,9 @@
 				})
 			},
 			onLoadMore(){
+				if(this.commentData.current_page>=this.commentData.total_page) return
+				this.commentData.current_page++
+				
 				this.getCommentData()
 			}
 		}
