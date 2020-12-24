@@ -101,6 +101,15 @@
             }
             
         }
+        ,{
+            "path" : "components/my-card/my-card",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "white",

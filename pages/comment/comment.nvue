@@ -19,7 +19,7 @@
 				<my-comment style="flex: 1;" :type="1"></my-comment>
 			</swiper-item>
 			<swiper-item>
-				<my-comment style="flex: 1;"></my-comment>
+				<my-comment style="flex: 1;" :followed="true"></my-comment>
 			</swiper-item>
 		</swiper>
 	</view>

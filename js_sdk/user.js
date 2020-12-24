@@ -15,3 +15,11 @@ export function getUser(){
 export function sendSms(data){
 	return request.post("smsGet",data)
 }
+
+export function followUser(data){
+	return request.post("follow/on",data)
+}
+
+export function cancelFollowUser(data){
+	return request.post("follow/off",data)
+}

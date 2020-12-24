@@ -36,6 +36,6 @@ export function addComment(data){
 	return request.post("article/add",data)
 }
 
-export function getComment(data){
-	return request.post("article/list",data)
+export function getComment(data,followed){
+	return request.post(followed ? "article/followList" : "article/list",data)
 }
