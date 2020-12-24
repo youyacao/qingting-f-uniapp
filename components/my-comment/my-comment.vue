@@ -1,6 +1,11 @@
 <template>
 	<view style="flex: 1;">
 		<list style="flex: 1;" @loadmore="onLoadMore" :loadmoreoffset="100" ref="list">
+			<refresh class="loading-box" @refresh="onPullLoading" @pullingdown="onPulling" :display="pull_loading ? 'show' : 'hide'">
+				<loading-indicator></loading-indicator>
+				<text class="load-text" v-if="pull_loading">正在加载...</text>
+				<text class="load-text" v-else>下拉刷新</text>
+			</refresh>
 			<cell>
 				<view class="comment-list">
 					<text class="nodata-box" v-if="!commentData || commentData.list.length == 0">{{loaded ? '暂无内容' : '正在加载...'}}</text>
@@ -26,7 +31,13 @@
 								:key="'image_'+_index"></image>
 						</view>
 						<my-card style="margin-top: 20rpx;" :info="comment.movie" v-if="comment.movie"></my-card>
-						
+						<view class="tool-box">
+							<view class="tool-item" @click="onLike(comment)">
+								<text class="icon-font tool-btn" v-if="comment.is_like">&#xe60c;</text>
+								<text class="icon-font tool-btn" v-else>&#xe628;</text>
+								<text class="tool-text">{{comment.like_num}}</text>
+							</view>
+						</view>
 					</view>
 				</view>
 			</cell>
@@ -36,7 +47,12 @@
 
 <script>
 	import {
-		getComment
+		mapGetters
+	} from 'vuex'
+	import {
+		getComment,
+		addLike,
+		removeLike
 	} from "@/js_sdk/video.js"
 	import {
 		followUser,
@@ -48,7 +64,7 @@
 			return {
 				commentData:null,
 				loaded:false,
-				test:{movie:{title:'test'}}
+				pull_loading:false
 			};
 		},
 		props:{
@@ -65,6 +81,9 @@
 				default:false
 			}
 		},
+		computed:{
+			...mapGetters(["userInfo"])
+		},
 		mounted() {
 			this.getCommentData()
 		},
@@ -75,8 +94,9 @@
 					order:this.type,
 					user_id:this.user_id,
 					page:this.commentData ? this.commentData.current_page : 1
-				},this.followed).then(res=>{console.log(res.data)
+				},this.followed).then(res=>{//console.log(res.data)
 					this.loaded = true
+					this.pull_loading = false
 					if(replace){
 						this.commentData = res.data
 					}else{
@@ -90,6 +110,7 @@
 					
 					//console.log(res)
 				}).catch(error=>{
+					this.pull_loading = false
 					this.loaded = true
 					console.log(error)
 				})
@@ -115,6 +136,10 @@
 				this.getCommentData()
 			},
 			onFollow(item){
+				if(!this.userInfo){
+					this.goToLogin()
+					return
+				}
 				uni.showLoading({
 					title:"正在提交"
 				})
@@ -130,6 +155,10 @@
 				})
 			},
 			cancelFollowUser(item){
+				if(!this.userInfo){
+					this.goToLogin()
+					return
+				}
 				uni.showLoading({
 					title:"正在提交"
 				})
@@ -143,12 +172,73 @@
 				}).catch(error=>{
 					console.log(error)
 				})
-			}
+			},
+			onPulling(e){
+				//console.log(e)
+			},
+			onPullLoading(){
+				if(this.commentData) this.commentData.current_page = 1
+				this.pull_loading = true
+				this.getCommentData(true)
+			},
+			onLike(item){
+				if(!this.userInfo){
+					this.goToLogin()
+					return
+				}
+				uni.showLoading({
+					title:"正在提交"
+				})
+				if(item.is_like == 0){
+					addLike({
+						vid:item.id,
+						type:2
+					}).then(res=>{
+						uni.showToast({
+							title:res.msg
+						})
+						item.is_like = 1
+						item.like_num++
+					}).catch(error=>{
+						console.log(error)
+					})
+				}else{
+					removeLike({
+						vid:item.id,
+						type:2
+					}).then(res=>{
+						uni.showToast({
+							title:res.msg
+						})
+						item.is_like = 0
+						item.like_num--
+					}).catch(error=>{
+						console.log(error)
+					})
+				}
+			},
+			goToLogin(){
+				uni.navigateTo({
+					url:"/pages/login/login"
+				})
+			},
 		}
 	}
 </script>
 
 <style lang="scss" scoped>
+.loading-box{
+	width: 750rpx;
+	justify-content: center;
+	align-items: center;
+	flex-direction: row;
+	padding: 20rpx;
+}
+.load-text{
+	color: #F1F1F1;
+	margin-left: 30rpx;
+	font-size: $uni-font-size-base;
+}
 .nodata-box{
 	padding: 20rpx;
 	text-align: center;
@@ -209,15 +299,34 @@
 .follow-btn{
 	background-color: #DD524D;
 	color: #F1F1F1;
-	font-size: $uni-font-size-base;
+	font-size: $uni-font-size-sm;
 	padding: 10rpx 20rpx;
 	border-radius: 10rpx;
 }
 .cancel-follow-btn{
 	background-color: #3F536E;
 	color: #F1F1F1;
-	font-size: $uni-font-size-base;
+	font-size: $uni-font-size-sm;
 	padding: 10rpx 20rpx;
 	border-radius: 10rpx;
+}
+.tool-box{
+	flex-direction: row;
+	justify-content:flex-end;
+	align-items: center;
+	margin-top: 20rpx;
+}
+.tool-item{
+	flex-direction: row;
+	align-items: center;
+}
+.tool-btn{
+	font-size: 32rpx;
+	color: #F1F1F1;
+}
+.tool-text{
+	font-size: 32rpx;
+	color: #F1F1F1;
+	margin-left: 10rpx;
 }
 </style>

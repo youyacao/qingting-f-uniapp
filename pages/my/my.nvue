@@ -15,11 +15,11 @@
 				</view>
 			</view>
 			<view class="tool-bar-box">
-				<view class="tool-item">
+				<view class="tool-item" @click="goToPage('/pages/my/followed/followed')">
 					<text class="num-text">{{userInfo.my_follow_num}}</text>
 					<text class="tool-text">关注</text>
 				</view>
-				<view class="tool-item">
+				<view class="tool-item" @click="goToPage('/pages/my/fans/fans')">
 					<text class="num-text">{{userInfo.follow_num}}</text>
 					<text class="tool-text">粉丝</text>
 				</view>

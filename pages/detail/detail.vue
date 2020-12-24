@@ -74,16 +74,27 @@
 			<view class="comment-list">
 				<text v-if="!commentData || commentData.list.length == 0">暂无内容</text>
 				<view v-else class="comment-item" v-for="(comment,index) in commentData.list" :key="comment.id">
-					<view class="avatar-box">
-						<image class="avatar-image" :src="comment.avatar"></image>
-						<view class="user-info">
-							<text class="username">{{comment.nickname ? comment.nickname : comment.username}}</text>
-							<text class="comment-date">{{comment.mtime}}</text>
+					<view class="info-box">
+						<view class="avatar-box">
+							<image class="avatar-image" :src="comment.avatar"></image>
+							<view class="user-info">
+								<text class="username">{{comment.nickname ? comment.nickname : comment.username}}</text>
+								<text class="comment-date">{{comment.mtime}}</text>
+							</view>
 						</view>
+						<text class="follow-btn" @click="onFollow(comment)" v-if="comment.is_follow == 0">关注</text>
+						<text class="cancel-follow-btn" @click="cancelFollowUser(comment)" v-else>取消关注</text>
 					</view>
 					<view class="comment-content">{{comment.content}}</view>
 					<view class="comment-image-list" v-if="comment.images">
 						<image :src="image" class="comment-image" v-for="(image,_index) in comment.images" @click="onPreimages(comment.images,_index)"></image>
+					</view>
+					<view class="c-tool-box">
+						<view class="c-tool-item" @click="onLike(comment)">
+							<text class="icon-font c-tool-btn" v-if="comment.is_like">&#xe60c;</text>
+							<text class="icon-font c-tool-btn" v-else>&#xe628;</text>
+							<text class="c-tool-text">{{comment.like_num}}</text>
+						</view>
 					</view>
 				</view>
 			</view>
@@ -112,6 +123,10 @@
 		removeLike,
 		getComment
 	} from "@/js_sdk/video.js"
+	import {
+		followUser,
+		cancelFollowUser
+	} from "@/js_sdk/user.js"
 	export default {
 		data() {
 			return {
@@ -134,6 +149,7 @@
 			this.vid = options.id
 			this.loadViedoInfo()
 			this.loadVideoList()
+			this.getCommentList()
 		},
 		onShow() {
 			if(this.video){
@@ -143,7 +159,12 @@
 				})
 				this.$store.dispatch("video",null)
 			}
-			this.getCommentList()
+		},
+		onReachBottom() {
+			if(this.commentData && this.commentData.current_page>=this.commentData.total_page) return
+			this.commentData.current_page++
+			
+			this.getCommentData(getCommentList)
 		},
 		methods: {
 			loadViedoInfo(){
@@ -386,6 +407,80 @@
 					current:index,
 					urls:list
 				})
+			},
+			onFollow(item){
+				if(!this.userInfo){
+					this.goToLogin()
+					return
+				}
+				uni.showLoading({
+					title:"正在提交"
+				})
+				followUser({
+					follow_id:item.user_id
+				}).then(res=>{
+					uni.showToast({
+						title:res.msg
+					})
+					item.is_follow = 1
+				}).catch(error=>{
+					console.log(error)
+				})
+			},
+			cancelFollowUser(item){
+				if(!this.userInfo){
+					this.goToLogin()
+					return
+				}
+				uni.showLoading({
+					title:"正在提交"
+				})
+				cancelFollowUser({
+					follow_id:item.user_id
+				}).then(res=>{
+					uni.showToast({
+						title:res.msg
+					})
+					item.is_follow = 0
+				}).catch(error=>{
+					console.log(error)
+				})
+			},
+			onLike(item){
+				if(!this.userInfo){
+					this.goToLogin()
+					return
+				}
+				uni.showLoading({
+					title:"正在提交"
+				})
+				if(item.is_like == 0){
+					addLike({
+						vid:item.id,
+						type:2
+					}).then(res=>{
+						uni.showToast({
+							title:res.msg
+						})
+						item.is_like = 1
+						item.like_num++
+					}).catch(error=>{
+						console.log(error)
+					})
+				}else{
+					removeLike({
+						vid:item.id,
+						type:2
+					}).then(res=>{
+						uni.showToast({
+							title:res.msg
+						})
+						item.is_like = 0
+						item.like_num--
+					}).catch(error=>{
+						console.log(error)
+					})
+				}
 			}
 		}
 	}
@@ -565,6 +660,12 @@
 	border-bottom: #353535 1px solid;
 	padding: 20rpx 0;
 }
+.comment-item .info-box{
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+}
 .avatar-box{
 	display: flex;
 	flex-direction: row;
@@ -599,5 +700,42 @@
 	width: 215rpx;
 	height: 215rpx;
 	margin: 10rpx;
+}
+.follow-btn{
+	background-color: #DD524D;
+	color: #F1F1F1;
+	font-size: $uni-font-size-sm;
+	padding: 10rpx 20rpx;
+	border-radius: 10rpx;
+}
+.cancel-follow-btn{
+	background-color: #3F536E;
+	color: #F1F1F1;
+	font-size: $uni-font-size-sm;
+	padding: 10rpx 20rpx;
+	border-radius: 10rpx;
+}
+.c-tool-box{
+	display: flex;
+	flex-direction: row;
+	justify-content:flex-end;
+	align-items: center;
+	margin-top: 20rpx;
+}
+.c-tool-item{
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+.c-tool-btn{
+	display: flex;
+	font-size: 32rpx;
+	color: #F1F1F1;
+}
+.c-tool-text{
+	display: flex;
+	font-size: 32rpx;
+	color: #F1F1F1;
+	margin-left: 10rpx;
 }
 </style>
