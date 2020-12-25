@@ -23,3 +23,15 @@ export function followUser(data){
 export function cancelFollowUser(data){
 	return request.post("follow/off",data)
 }
+
+export function myFollow(data){
+	return request.post("follow/me",data)
+}
+
+export function myFans(data){
+	return request.post("follow/fans",data)
+}
+
+export function upateUser(data){
+	return request.post("complete",data)
+}

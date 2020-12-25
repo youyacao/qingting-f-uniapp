@@ -39,3 +39,11 @@ export function addComment(data){
 export function getComment(data,followed){
 	return request.post(followed ? "article/followList" : "article/list",data)
 }
+
+export function myCollect(data){
+	return request.post("collect/list",data)
+}
+
+export function myLike(data){
+	return request.post("like/list",data)
+}

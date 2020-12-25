@@ -1,0 +1,89 @@
+<template>
+	<view>
+		<view v-if="userInfo">
+			<view class="avatar-box">
+				<image class="avatar-image" mode="aspectFill" :src="userInfo.avatar" @click="onClickAvatar"></image>
+			</view>
+			
+		</view>
+		<text class="nodata-box" v-else>请先登陆</text>
+	</view>
+</template>
+
+<script>
+	import {
+		mapGetters
+	} from 'vuex'
+	
+	import{uploadImage} from "@/js_sdk/video.js"
+	import {getUser,upateUser} from "@/js_sdk/user.js"
+	
+	export default {
+		data() {
+			return {
+				
+			}
+		},
+		computed: {
+			...mapGetters(['userInfo'])
+		},
+		onShow() {
+			console.log(this.userInfo)
+		},
+		methods: {
+			onClickAvatar(){
+				uni.chooseImage({
+				    count: 1,
+				    sourceType: ['album','camera'], //从相册选择
+				    success:  (res) => {
+				        uni.showLoading({
+				        	title:"正在上传图片"
+				        })
+						uploadImage({
+							filePath:res.tempFilePaths[0]
+						}).then(_res => {
+							uni.showLoading({
+								title:"正在更新头像"
+							})
+							upateUser({
+								avatar:_res.data.img_url
+							}).then(_res_=>{
+								uni.showToast({
+									title:"更新成功"
+								})
+								getUser().then(res=>{
+									this.$store.dispatch("userInfo",res.data)
+								}).catch(error=>{
+									console.log(error)
+								})
+							}).catch(error=>{
+								console.log(error)
+							})
+						}).catch(error=>{
+							console.log(error)
+						})
+				    }
+				});
+			}
+		}
+	}
+</script>
+
+<style lang="scss" scoped>
+.nodata-box{
+	padding: 20rpx;
+	text-align: center;
+	font-size: $uni-font-size-base;
+	color: #F1F1F1;
+}
+.avatar-box{
+	justify-content: center;
+	align-items: center;
+	padding: 20rpx;
+}
+.avatar-image{
+	width: 300rpx;
+	height: 300rpx;
+	border-radius: 20rpx;
+}
+</style>

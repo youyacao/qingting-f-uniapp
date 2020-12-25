@@ -76,7 +76,7 @@
 				<view v-else class="comment-item" v-for="(comment,index) in commentData.list" :key="comment.id">
 					<view class="info-box">
 						<view class="avatar-box">
-							<image class="avatar-image" :src="comment.avatar"></image>
+							<image mode="aspectFill" class="avatar-image" :src="comment.avatar"></image>
 							<view class="user-info">
 								<text class="username">{{comment.nickname ? comment.nickname : comment.username}}</text>
 								<text class="comment-date">{{comment.mtime}}</text>
@@ -101,7 +101,7 @@
 		</view>
 		<view style="height: 120rpx;"></view>
 		<view class="add-comment" v-if="userInfo" @click="goToAddcomment">
-			<image :src="userInfo.avatar" class="avatar-image"></image>
+			<image mode="aspectFill" :src="userInfo.avatar" class="avatar-image"></image>
 			<text class="add-comment-text">我来发个影评~</text>
 		</view>
 		<view class="add-comment" v-else @click="goToLogin()">
@@ -213,7 +213,7 @@
 				this.player.play()
 			},
 			videoErrorCallback(e){
-				console.log(e)
+				//console.log(e)
 			},
 			onFullscreen({detail}){
 				if(!detail.fullScreen && this.player){

@@ -12,7 +12,7 @@
 					<view v-else class="comment-item" v-for="(comment,index) in commentData.list" :key="'list_'+comment.id">
 						<view class="info-box">
 							<view class="avatar-box">
-								<image class="avatar-image" :src="comment.avatar"></image>
+								<image mode="aspectFill" class="avatar-image" :src="comment.avatar"></image>
 								<view class="user-info">
 									<text class="username">{{comment.nickname ? comment.nickname : comment.username}}</text>
 									<text class="comment-date">{{comment.mtime}}</text>
@@ -94,7 +94,7 @@
 					order:this.type,
 					user_id:this.user_id,
 					page:this.commentData ? this.commentData.current_page : 1
-				},this.followed).then(res=>{//console.log(res.data)
+				},this.followed).then(res=>{//if(this.followed) console.log(res.data)
 					this.loaded = true
 					this.pull_loading = false
 					if(replace){
@@ -104,6 +104,8 @@
 							this.commentData = res.data
 						}else{
 							this.commentData.list = this.commentData.list.concat(res.data.list)
+							this.commentData.total_page = res.data.total_page
+							this.commentData.current_page = res.data.current_page
 						}
 					}
 					 this.$refs["list"].resetLoadmore();
