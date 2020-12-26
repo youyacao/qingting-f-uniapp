@@ -5,10 +5,11 @@
 			<template v-for="(item,index) in dataInfo.list" v-else>
 				<view class="follow-item">
 					<view class="info-box">
-						<image class="avatar-image" :src="item.avatar"></image>
+						<image mode="aspectFill" class="avatar-image" :src="item.avatar"></image>
 						<text class="username">{{item.nickname ? item.nickname : item.username}}</text>
 					</view>
-					<text class="cancel-follow-btn" @click="cancelFollowUser(item,index)" v-if="0">取消关注</text>
+					<text class="follow-btn" @click="onFollow(item)" v-if="item.is_follow == 0">关注</text>
+					<text class="cancel-follow-btn" @click="cancelFollowUser(item)" v-else>取消关注</text>
 				</view>
 			</template>
 		</view>
@@ -60,6 +61,22 @@
 					console.log(error)
 				})
 			},
+			onFollow(item){
+
+				uni.showLoading({
+					title:"正在提交"
+				})
+				followUser({
+					follow_id:item.user_id
+				}).then(res=>{
+					uni.showToast({
+						title:res.msg
+					})
+					item.is_follow = 1
+				}).catch(error=>{
+					console.log(error)
+				})
+			},
 			cancelFollowUser(item,index){
 				uni.showModal({
 					title:"提示",
@@ -70,12 +87,12 @@
 								title:"正在提交"
 							})
 							cancelFollowUser({
-								follow_id:item.follow_id
+								follow_id:item.user_id
 							}).then(res=>{
 								uni.showToast({
 									title:res.msg
 								})
-								
+								item.is_follow = 0
 							}).catch(error=>{
 								console.log(error)
 							})
@@ -121,6 +138,13 @@
 	font-size: 32rpx;
 	color: #F1F1F1;
 	margin-left: 20rpx;
+}
+.follow-btn{
+	background-color: #DD524D;
+	color: #F1F1F1;
+	font-size: $uni-font-size-sm;
+	padding: 10rpx 20rpx;
+	border-radius: 10rpx;
 }
 .cancel-follow-btn{
 	background-color: #3F536E;

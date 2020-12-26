@@ -67,7 +67,7 @@
 			view2.style.backgroundColor = "rgba(0,0,0,0.7)"
 			view2.style.color = "#FFFFFF"
 			view2.style.borderRadius = "10rpx"
-			view2.innerText = "启动 5S"
+			view2.innerText = "正在启动"
 			view2.style.textAlign = "center"
 			view2.style.textValign = "middle"
 			
@@ -80,10 +80,10 @@
 					clearInterval(timer)
 					count = 0
 				}
-				view2.innerText = "启动 " + count +"S"
+				//view2.innerText = "启动 " + count +"S"
 				if(count == 0){
-					//view.close()
-					view.fadeOut("fast")
+					view.close()
+					//view.fadeOut("fast")
 				}
 			},1000)
 			//显示启动广告，显示后把默认启动图关闭
@@ -135,7 +135,7 @@
 	}
 </script>
 
-<style>
+<style lang="scss">
 	/*每个页面公共css */
 	.blank-height{
 		height: 20rpx;
@@ -145,5 +145,29 @@
 	.icon-font {
 	  font-family:iconfont2;
 	  font-size: 16px;
+	}
+	.button-hover{
+		opacity: 0.7;
+	}
+	.form-item-box{
+		padding: 20rpx;
+	}
+	.form-input{
+		font-size: $uni-font-size-base;
+		color: $uni-text-color;
+		background-color: #3B4144;
+		padding:0 20rpx;
+		height: 68rpx;
+		border-radius: 10rpx;
+	}
+	.submit-button{
+		border-radius: 10rpx;
+		padding: 20rpx;
+		background-color: #DD524D;
+	}
+	.submit-button-text{
+		font-size: $uni-font-size-base;
+		color: #F1F1F1;
+		text-align: center;
 	}
 </style>

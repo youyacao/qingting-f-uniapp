@@ -30,7 +30,7 @@
 					
 				</view>
 				
-				<view class="play-btn" hover-class="btn-press" @click="playVideo(0)">
+				<view class="play-btn" hover-class="btn-press" @click="playVideo(-1)">
 					<text class="icon-font play-btn-text" style="margin-right: 10rpx;">&#xe672;</text>
 					<text class="play-btn-text">播放</text>
 				</view>
@@ -147,7 +147,6 @@
 		},
 		onLoad(options) {
 			this.vid = options.id
-			this.loadViedoInfo()
 			this.loadVideoList()
 			this.getCommentList()
 		},
@@ -157,8 +156,8 @@
 				uni.setNavigationBarTitle({
 					title:this.video.title
 				})
-				this.$store.dispatch("video",null)
 			}
+			this.loadViedoInfo()
 		},
 		onReachBottom() {
 			if(this.commentData && this.commentData.current_page>=this.commentData.total_page) return
@@ -171,12 +170,24 @@
 				getVideo(this.vid).then(res=>{//console.log(res)
 					this.videoInfo = res.data
 					this.videoTitle = this.videoInfo.title
+					this.$store.dispatch("video",res.data)
+					this.initPlayIndex()
 					uni.setNavigationBarTitle({
 						title:this.videoTitle
 					})
 				}).catch(error=>{
 					console.log(error)
 				})
+			},
+			initPlayIndex(){
+				var movie = this.videoInfo
+				if(movie && movie.history && this.videoList){
+					this.videoList.forEach((item,index)=>{
+						if(movie.history.movie_detail_id == item.id){
+							this.playIndex = index
+						}
+					})
+				}
 			},
 			loadVideoList(){
 				getVideoList(this.vid).then(res=>{
@@ -186,11 +197,15 @@
 					this.videoList.forEach(item=>{
 						this.tabList.push(item.title)
 					})
+					this.initPlayIndex()
 				}).catch(error=>{
 					console.log(error)
 				})
 			},
 			playVideo(index){
+				if(index == -1){
+					index = this.playIndex
+				}
 				if(this.videoList.length == 0){
 					uni.showToast({
 						icon:"none",
@@ -199,7 +214,14 @@
 					})
 					return
 				}
-				if(index == this.playIndex && this.player){
+				this.playIndex = index
+				this.$store.dispatch("playlist",this.videoList)
+				uni.navigateTo({
+					animationType: 'none',
+					url:"/pages/player/player?index="+index
+				})
+				
+				/*if(index == this.playIndex && this.player){
 					this.player.requestFullScreen()
 					this.player.play()
 					return 
@@ -210,7 +232,7 @@
 				}
 				this.videoUrl = this.videoList[index].url
 				this.player.requestFullScreen()
-				this.player.play()
+				this.player.play()*/
 			},
 			videoErrorCallback(e){
 				//console.log(e)

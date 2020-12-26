@@ -43,7 +43,7 @@
 					</view>
 			    </uni-grid-item>
 			    <uni-grid-item  :index="3">
-			        <view class="card-item">
+			        <view class="card-item" @click="goToPage('/pages/my/hisgory/hisgory')">
 						<text class="icon-font grid-icon">&#xe656;</text>
 						<text class="grid-text">继续观看</text>
 					</view>

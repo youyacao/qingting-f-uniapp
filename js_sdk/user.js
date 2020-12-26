@@ -35,3 +35,11 @@ export function myFans(data){
 export function upateUser(data){
 	return request.post("complete",data)
 }
+
+export function upatePassword(data){
+	return request.post("forget",data)
+}
+
+export function logout(){
+	return request.post("logout",null)
+}

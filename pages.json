@@ -155,6 +155,46 @@
             }
             
         }
+        ,{
+            "path" : "pages/my/setting/nickname/nickname",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "设置昵称",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/my/setting/password/password",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "修改密码",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/player/player",
+            "style" :                                                                                    
+            {
+                "navigationStyle": "custom",
+                "backgroundColor": "transparent",
+                "app-plus": {
+                	"background": "transparent",
+                	"popGesture": "none"
+                }
+            }
+            
+        }
+        ,{
+            "path" : "pages/my/hisgory/hisgory",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "观看历史",
+                "enablePullDownRefresh": true
+            }
+            
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "white",

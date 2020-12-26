@@ -8,6 +8,7 @@ const store = new Vuex.Store({
 	getters,
 	state: {
 		tempVideo:null,
+		tempVideoList:null,
 		iStatusBarHeight: 0,
 		pageInfo: {
 			width: 0,
@@ -19,6 +20,9 @@ const store = new Vuex.Store({
 		setTempVideo(state,data){
 			state.tempVideo = data
 		},
+		setTempVideoList(state,data){
+			state.tempVideoList = data
+		},
 		setStatusBarHeight(state, data) {
 			state.iStatusBarHeight = data;
 		},
@@ -26,14 +30,15 @@ const store = new Vuex.Store({
 			state.pageInfo = data;
 		},
 		setUserInfo(state, data) {
-			state.userInfo = { ...state.userInfo,
-				...data
-			}
+			state.userInfo = data
 		}
 	},
 	actions: {
 		video(context, data){
 			context.commit("setTempVideo", data)
+		},
+		playlist(context, data){
+			context.commit("setTempVideoList", data)
 		},
 		statusBarHeight(context, data) {
 			context.commit("setStatusBarHeight", data)

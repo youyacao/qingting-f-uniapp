@@ -47,3 +47,11 @@ export function myCollect(data){
 export function myLike(data){
 	return request.post("like/list",data)
 }
+
+export function historyAdd(data){
+	return request.post("movie/historyAdd",data)
+}
+
+export function historyList(data){
+	return request.post("movie/historyList",data)
+}
