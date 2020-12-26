@@ -118,7 +118,8 @@
 				}  else if (code == 10) {
 
 				} else if (code == 11) {
-					console.log(e)
+					this.index = e.index
+					//console.log(e)
 				} else if (code == 13) {
 					this.savePlayDuration()
 					//当退出全屏，则同时退出这个页面
