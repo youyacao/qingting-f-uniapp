@@ -204,7 +204,7 @@
 			},
 			playVideo(index){
 				if(index == -1){
-					index = this.playIndex
+					index = this.playIndex >=0 ? this.playIndex : 0
 				}
 				if(this.videoList.length == 0){
 					uni.showToast({

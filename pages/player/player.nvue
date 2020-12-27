@@ -1,7 +1,7 @@
 <template>
-	<div>
-		<oxeVideo ref='video' isLive=false :style='boxStyle' :initVideoData='vData'></oxeVideo>
-	</div>
+	<view>
+		<oxeVideo ref='video' isLive=false :style='boxStyle' ></oxeVideo>
+	</view>
 </template>
 
 <script>
@@ -83,7 +83,29 @@
 			//15 广告倒计时点击事件
 			//16 播放结束
 			var globalEvent = weex.requireModule('globalEvent');
+			
+			
+			if(this.video && this.playlist){
+				var data = []
+				
+				this.playlist.forEach((item,index)=>{
+					data.push({
+						title:this.video.title + '-' + item.title,
+						index:item.title,
+						thumb:item.thumb,
+						url:item.url
+					})
+				})
+				this.vData.index = this.index
+				this.vData.data = data
+				this.getHistoryRecord()
+				//console.log(data)
+			}
+			
 			var ox = this.$refs.video;
+			//console.log(this.vData)
+			ox.initVideoData(this.vData);
+			
 			//直接进入全屏播放
 			ox.enterFullScreen()
 
@@ -119,24 +141,6 @@
 					
 				}
 			})
-			
-			if(this.video && this.playlist){
-				var data = []
-				
-				this.playlist.forEach((item,index)=>{
-					data.push({
-						title:this.video.title + '-' + item.title,
-						index:item.title,
-						thumb:item.thumb,
-						url:item.url
-					})
-				})
-				this.vData.index = this.index
-				this.vData.data = data
-				this.getHistoryRecord()
-				
-				ox.initVideoData(this.vData)
-			}
 
 		},
 		methods: {
