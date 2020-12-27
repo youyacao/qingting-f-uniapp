@@ -135,7 +135,7 @@
 				this.vData.data = data
 				this.getHistoryRecord()
 				
-				ox.initVideoData(data)
+				ox.initVideoData(this.vData)
 			}
 
 		},
