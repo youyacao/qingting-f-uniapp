@@ -8,7 +8,7 @@
 				<input v-model="formData.username" type="number" class="input-box" placeholder="请输入手机号" />
 			</view>
 			<view class="form-item-box">
-				<input v-model="formData.password" class="input-box" password="password" placeholder="请输入登陆密码" />
+				<input v-model="formData.password" class="input-box" password placeholder="请输入登陆密码" />
 			</view>
 			<view class="form-item-box">
 				<view class="submit-button" hover-class="button-hover" @click="onSubmit()">

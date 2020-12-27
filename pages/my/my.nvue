@@ -3,7 +3,7 @@
 		<template v-if="userInfo">
 			<view class="user-info-box">
 				<view class="avatar">
-					<image :src="userInfo.avatar" class="avatar-image"></image>
+					<image mode="aspectFill" :src="userInfo.avatar" class="avatar-image"></image>
 				</view>
 				<view class="user-info">
 					<view class="user-phone">
@@ -15,11 +15,11 @@
 				</view>
 			</view>
 			<view class="tool-bar-box">
-				<view class="tool-item">
+				<view class="tool-item" @click="goToPage('/pages/my/followed/followed')">
 					<text class="num-text">{{userInfo.my_follow_num}}</text>
 					<text class="tool-text">关注</text>
 				</view>
-				<view class="tool-item">
+				<view class="tool-item" @click="goToPage('/pages/my/fans/fans')">
 					<text class="num-text">{{userInfo.follow_num}}</text>
 					<text class="tool-text">粉丝</text>
 				</view>
@@ -43,25 +43,25 @@
 					</view>
 			    </uni-grid-item>
 			    <uni-grid-item  :index="3">
-			        <view class="card-item">
+			        <view class="card-item" @click="goToPage('/pages/my/hisgory/hisgory')">
 						<text class="icon-font grid-icon">&#xe656;</text>
 						<text class="grid-text">继续观看</text>
 					</view>
 			    </uni-grid-item>
 				<uni-grid-item  :index="4">
-					<view class="card-item">
+					<view class="card-item" @click="goToPage('/pages/my/collect/collect')">
 						<text class="icon-font grid-icon">&#xe705;</text>
 						<text class="grid-text">我的片单</text>
 					</view>
 				</uni-grid-item>
 				<uni-grid-item  :index="5">
-				    <view class="card-item">
+				    <view class="card-item" @click="goToPage('/pages/my/like/like')">
 						<text class="icon-font grid-icon">&#xe628;</text>
 						<text class="grid-text">喜欢影视</text>
 					</view>
 				</uni-grid-item>
 				<uni-grid-item  :index="6">
-				    <view class="card-item">
+				    <view class="card-item" @click="goToPage('/pages/my/setting/setting')">
 						<text class="icon-font grid-icon">&#xe624;</text>
 						<text class="grid-text">我的设置</text>
 					</view>

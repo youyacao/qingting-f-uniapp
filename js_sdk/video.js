@@ -36,6 +36,22 @@ export function addComment(data){
 	return request.post("article/add",data)
 }
 
-export function getComment(data){
-	return request.post("article/list",data)
+export function getComment(data,followed){
+	return request.post(followed ? "article/followList" : "article/list",data)
+}
+
+export function myCollect(data){
+	return request.post("collect/list",data)
+}
+
+export function myLike(data){
+	return request.post("like/list",data)
+}
+
+export function historyAdd(data){
+	return request.post("movie/historyAdd",data)
+}
+
+export function historyList(data){
+	return request.post("movie/historyList",data)
 }

@@ -1,7 +1,7 @@
 <template>
 	<view style="flex: 1;">
 		<my-comment style="flex: 1;" :user_id="userInfo.id" v-if="userInfo"></my-comment>
-		<text class="nodata-box">请先登陆</text>
+		<text class="nodata-box" v-else>请先登陆</text>
 	</view>
 </template>
 
