@@ -61,22 +61,7 @@
 			this.boxStyle.width = this.wWidth;
 		},
 		onShow() {
-			if(this.video && this.playlist){
-				var data = []
-				
-				this.playlist.forEach((item,index)=>{
-					data.push({
-						title:this.video.title + '-' + item.title,
-						index:item.title,
-						thumb:item.thumb,
-						url:item.url
-					})
-				})
-				this.vData.index = this.index
-				this.vData.data = data
-				this.getHistoryRecord()
-				//console.log(data)
-			}
+			
 		},
 		onReady() {
 			//事件监听
@@ -134,6 +119,24 @@
 					
 				}
 			})
+			
+			if(this.video && this.playlist){
+				var data = []
+				
+				this.playlist.forEach((item,index)=>{
+					data.push({
+						title:this.video.title + '-' + item.title,
+						index:item.title,
+						thumb:item.thumb,
+						url:item.url
+					})
+				})
+				this.vData.index = this.index
+				this.vData.data = data
+				this.getHistoryRecord()
+				
+				ox.initVideoData(data)
+			}
 
 		},
 		methods: {
