@@ -14,3 +14,7 @@ export function hotVideo(){
 export function getLanchAd(){
 	return request.post("advert/list",{type:1})
 }
+
+export function config(data){
+	return request.post("config", data)
+}
