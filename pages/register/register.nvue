@@ -27,6 +27,17 @@
 				</view>
 			</view>
 		</view>
+		<view class="protocols">
+			<checkbox-group @change="_checkedChange">
+				<checkbox value="accept" :checked="checked" style="transform:scale(0.7);" />
+			</checkbox-group>
+			<view class="protocols-text__box">
+				<text class="protocols-text__item">已阅读并同意</text>
+				<navigator url="/pages/register/agreement/agreement" hover-class="none">
+					<text class="protocols-text__label">《用户使用协议》</text>
+				</navigator>
+			</view>
+		</view>
 	</view>
 </template>
 
@@ -42,13 +53,21 @@
 					repassword:""
 				},
 				daojishi:0,
-				isSendingCode:false
+				isSendingCode:false,
+				checked: true
 			}
 		},
 		onShow() {
 			
 		},
 		methods: {
+			_checkedChange({ detail }) {
+				if (detail.value.length) {
+					this.checked = true
+				} else {
+					this.checked = false
+				}
+			},
 			goBack(){
 				uni.navigateBack({
 					delta:1
@@ -78,6 +97,12 @@
 					this.formData.password = null
 					this.formData.repassword = null
 					return
+				}
+				if (!this.checked) {
+					return uni.showToast({
+						title: '请同意用户使用协议',
+						icon: 'none'
+					})
 				}
 				register(this.formData).then(res=>{
 					uni.showModal({
@@ -134,9 +159,28 @@
 </script>
 
 <style lang="scss" scoped>
+	.protocols {
+		flex-direction: row;
+		align-items: center;
+		justify-content: center;
+	}
+	.protocols-text__item {
+		color: #FFFFFF;
+		font-size: 28rpx;
+	}
+	.protocols-text__box {
+		flex-direction: row;
+		align-items: center;
+	}
+	.protocols-text__label {
+		color: #f42c2c;
+		font-size: 28rpx;
+	}
 .content{
 	background-color: #0e0e0e;
 	flex: 1;
+	justify-content: space-between;
+	padding-bottom: 32rpx;
 }
 .logo-box{
 	align-items: center;
