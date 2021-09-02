@@ -10,6 +10,20 @@ node.js +springboot2.2+springmvc+druid+mybatis+mangoDB+mysql+shiro-redis+redis+a
 
 此库为蜻蜓f前端，蜻蜓f前端使用vue+nuve+uniapp
  
+#### 蜻蜓系列软件架构
+
+![](https://songshu.youyacao.com/images/film/film.gif)
+
+![](https://doc.youyacao.com/server/index.php?s=/api/attachment/visitFile/sign/2071cad0577fc8068951d666f327138d)
+
+![](https://doc.youyacao.com/server/index.php?s=/api/attachment/visitFile/sign/29e4ee8ee2327c34f1e02558e6a72065)
+
+
+![](https://doc.youyacao.com/server/index.php?s=/api/attachment/visitFile/sign/4ce344ff15c06206b9bc278d37d6a4ca)
+ 
+ 
+ ![](https://doc.youyacao.com/server/index.php?s=/api/attachment/visitFile/sign/1ad2c3b903a2cdd2cc81198af3435ee8)
+ 
  
  其他版本请关注松鼠/蜻蜓系统管网 
 
