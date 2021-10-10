@@ -1,15 +1,8 @@
 <template>
 	<view class="content">
-		<video id="myVideo" 
-			style="width: 0px;height: 0px;"
-			:autoplay="true"
-			:title="videoTitle"
-			:src="videoUrl"
-			@error="videoErrorCallback" 
-			:danmu-list="danmuList"
-			@fullscreenchange="onFullscreen"
-			@ended="onEnd"
-			enable-danmu danmu-btn controls></video>
+		<video id="myVideo" style="width: 0px;height: 0px;" :autoplay="true" :title="videoTitle" :src="videoUrl"
+			:danmu-list="danmuList" @fullscreenchange="onFullscreen" @ended="onEnd" enable-danmu danmu-btn
+			controls></video>
 		<view class="top-box" v-if="videoInfo">
 			<view class="bg-box">
 				<image class="top-bg-image" :src="videoInfo.thumb" v-if="videoInfo.thumb"></image>
@@ -27,9 +20,9 @@
 						<text class="country">{{videoInfo.region_str}}</text>
 						<text class="duration">{{videoInfo.duration}}</text>
 					</view>
-					
+
 				</view>
-				
+
 				<view class="play-btn" hover-class="btn-press" @click="playVideo(-1)">
 					<text class="icon-font play-btn-text" style="margin-right: 10rpx;">&#xe672;</text>
 					<text class="play-btn-text">播放</text>
@@ -62,11 +55,8 @@
 		<view class="video-list-box">
 			<view class="title">选择剧集</view>
 			<view class="list-box">
-				<text class="text" 
-					:class="{'select':playIndex == index}" 
-					v-for="(item,index) in videoList" 
-					:key="item.id"
-					@click="playVideo(index)">{{item.title}}</text>
+				<text class="text" :class="{'select':playIndex == index}" v-for="(item,index) in videoList"
+					:key="item.id" @click="playVideo(index)">{{item.title}}</text>
 			</view>
 		</view>
 		<view class="comment-box">
@@ -87,7 +77,8 @@
 					</view>
 					<view class="comment-content">{{comment.content}}</view>
 					<view class="comment-image-list" v-if="comment.images">
-						<image :src="image" class="comment-image" v-for="(image,_index) in comment.images" @click="onPreimages(comment.images,_index)"></image>
+						<image :src="image" class="comment-image" v-for="(image,_index) in comment.images"
+							@click="onPreimages(comment.images,_index)"></image>
 					</view>
 					<view class="c-tool-box">
 						<view class="c-tool-item" @click="onLike(comment)">
@@ -121,7 +112,8 @@
 		removeCollect,
 		addLike,
 		removeLike,
-		getComment
+		getComment,
+		addDownlaodHistory
 	} from "@/js_sdk/video.js"
 	import {
 		followUser,
@@ -130,20 +122,20 @@
 	export default {
 		data() {
 			return {
-				vid:null,
-				videoInfo:null,
-				videoList:[],
-				playIndex:-1,
-				videoUrl:null,
-				danmuList:[],
-				player:null,
-				videoTitle:null,
-				tabList:[],
-				commentData:null
+				vid: null,
+				videoInfo: null,
+				videoList: [],
+				playIndex: -1,
+				videoUrl: null,
+				danmuList: [],
+				player: null,
+				videoTitle: null,
+				tabList: [],
+				commentData: null
 			}
 		},
-		computed:{
-			...mapGetters(["userInfo","video"])
+		computed: {
+			...mapGetters(["userInfo", "video"])
 		},
 		onLoad(options) {
 			this.vid = options.id
@@ -151,355 +143,366 @@
 			this.getCommentList()
 		},
 		onShow() {
-			if(this.video){
+			if (this.video) {
 				this.videoInfo = this.video
 				uni.setNavigationBarTitle({
-					title:this.video.title
+					title: this.video.title
 				})
 			}
 			this.loadViedoInfo()
 		},
 		onReachBottom() {
-			if(this.commentData && this.commentData.current_page>=this.commentData.total_page) return
+			if (this.commentData && this.commentData.current_page >= this.commentData.total_page) return
 			this.commentData.current_page++
-			
+
 			this.getCommentData(getCommentList)
 		},
 		methods: {
-			loadViedoInfo(){
-				getVideo(this.vid).then(res=>{//console.log(res)
+			loadViedoInfo() {
+				getVideo(this.vid).then(res => {
 					this.videoInfo = res.data
 					this.videoTitle = this.videoInfo.title
-					this.$store.dispatch("video",res.data)
+					this.$store.dispatch("video", res.data)
 					this.initPlayIndex()
 					uni.setNavigationBarTitle({
-						title:this.videoTitle
+						title: this.videoTitle
 					})
-				}).catch(error=>{
+				}).catch(error => {
 					console.log(error)
 				})
 			},
-			initPlayIndex(){
+			initPlayIndex() {
 				var movie = this.videoInfo
-				if(movie && movie.history && this.videoList){
-					this.videoList.forEach((item,index)=>{
-						if(movie.history.movie_detail_id == item.id){
+				if (movie && movie.history && this.videoList) {
+					this.videoList.forEach((item, index) => {
+						if (movie.history.movie_detail_id == item.id) {
 							this.playIndex = index
 						}
 					})
 				}
 			},
-			loadVideoList(){
-				getVideoList(this.vid).then(res=>{
+			loadVideoList() {
+				getVideoList(this.vid).then(res => {
 					this.videoList = res.data.list
-					if(!this.videoList) return
+					if (!this.videoList) return
 					this.tabList = []
-					this.videoList.forEach(item=>{
+					this.videoList.forEach(item => {
 						this.tabList.push(item.title)
 					})
 					this.initPlayIndex()
-				}).catch(error=>{
+				}).catch(error => {
 					console.log(error)
 				})
 			},
-			playVideo(index){
-				if(index == -1){
-					index = this.playIndex >=0 ? this.playIndex : 0
+			// 播放
+			playVideo(index) {
+				if (this.userInfo === null) {
+					return uni.showToast({
+						title: '请先登录',
+						icon: 'none'
+					})
 				}
-				if(this.videoList.length == 0){
+				if (this.userInfo && this.userInfo.share_free_num === 0) {
+					return uni.showToast({
+						title: '免费观看次数已用完',
+						icon: 'none'
+					})
+				}
+				if (index == -1) {
+					index = this.playIndex >= 0 ? this.playIndex : 0
+				}
+				if (this.videoList.length == 0) {
 					uni.showToast({
-						icon:"none",
-						title:"暂无可播放视频",
-						duration:2500
+						icon: "none",
+						title: "暂无可播放视频",
+						duration: 2500
 					})
 					return
 				}
 				this.playIndex = index
-				this.$store.dispatch("playlist",this.videoList)
+				this.$store.dispatch("playlist", this.videoList)
 				uni.navigateTo({
 					animationType: 'none',
-					url:"/pages/player/player?index="+index
+					url: "/pages/player/player?index=" + index,
+					success() {}
 				})
-				
-				/*if(index == this.playIndex && this.player){
-					this.player.requestFullScreen()
-					this.player.play()
-					return 
-				}
-				this.playIndex = index
-				if(!this.player){
-					this.player = uni.createVideoContext('myVideo')
-				}
-				this.videoUrl = this.videoList[index].url
-				this.player.requestFullScreen()
-				this.player.play()*/
 			},
-			videoErrorCallback(e){
-				//console.log(e)
-			},
-			onFullscreen({detail}){
-				if(!detail.fullScreen && this.player){
+			onFullscreen({
+				detail
+			}) {
+				if (!detail.fullScreen && this.player) {
 					this.player.pause()
 				}
 			},
-			onEnd(){
-				if(this.playIndex<this.videoList.length - 1){
+			onEnd() {
+				if (this.playIndex < this.videoList.length - 1) {
 					uni.showToast({
-						icon:"none",
-						title:"正在自动切换下一集"
+						icon: "none",
+						title: "正在自动切换下一集"
 					})
 					this.playIndex++
 					this.videoUrl = this.videoList[this.playIndex].url
 					this.player.play()
 				}
 			},
-			goToLogin(){
+			goToLogin() {
 				uni.navigateTo({
-					url:"/pages/login/login"
+					url: "/pages/login/login"
 				})
 			},
-			onAddcollect(info){
-				if(!this.userInfo){
+			onAddcollect(info) {
+				if (!this.userInfo) {
 					this.goToLogin()
 					return
 				}
-				if(info.is_collect){
+				if (info.is_collect) {
 					removeCollect({
-						vid:info.id,
-						type:4
-					}).then(res=>{
+						vid: info.id,
+						type: 4
+					}).then(res => {
 						info.is_collect = 0
 						uni.showToast({
-							title:res.msg
+							title: res.msg
 						})
-					}).catch(error=>{
+					}).catch(error => {
 						console.log(error)
 					})
-				}else{
+				} else {
 					addCollect({
-						vid:info.id,
-						type:4
-					}).then(res=>{
+						vid: info.id,
+						type: 4
+					}).then(res => {
 						info.is_collect = 1
 						uni.showToast({
-							title:res.msg
+							title: res.msg
 						})
-					}).catch(error=>{
+					}).catch(error => {
 						console.log(error)
 					})
 				}
-				
+
 			},
-			onAddLike(info){
-				if(!this.userInfo){
+			onAddLike(info) {
+				if (!this.userInfo) {
 					this.goToLogin()
 					return
 				}
-				if(info.is_like){
+				if (info.is_like) {
 					removeLike({
-						vid:info.id,
-						type:4
-					}).then(res=>{
+						vid: info.id,
+						type: 4
+					}).then(res => {
 						info.is_like = 0
 						uni.showToast({
-							title:res.msg
+							title: res.msg
 						})
-					}).catch(error=>{
+					}).catch(error => {
 						console.log(error)
 					})
-				}else{
+				} else {
 					addLike({
-						vid:info.id,
-						type:4
-					}).then(res=>{
+						vid: info.id,
+						type: 4
+					}).then(res => {
 						info.is_like = 1
 						uni.showToast({
-							title:res.msg
+							title: res.msg
 						})
-					}).catch(error=>{
+					}).catch(error => {
 						console.log(error)
 					})
 				}
-				
+
 			},
-			onShare(){
+			onShare() {
 				uni.showToast({
-					icon:"none",
-					title:"此功能暂未开放"
+					icon: "none",
+					title: "此功能暂未开放"
 				})
 			},
-			onDownload(){
+			// 添加下载记录
+			_addDownloadHistory() {
+				addDownlaodHistory(this.videoInfo.id).then(({
+					code,
+					msg
+				}) => {})
+			},
+			onDownload() {
+				if (this.userInfo === null) {
+					return uni.showToast({
+						title: '请先登录',
+						icon: 'none'
+					})
+				}
 				uni.showActionSheet({
-				    itemList: this.tabList,
-				    success:  res =>{
-				        var video = this.videoList[res.tapIndex]
-						if(!video || !video.url){
+					itemList: this.tabList,
+					success: res => {
+						var video = this.videoList[res.tapIndex]
+						if (!video || !video.url) {
 							uni.showToast({
-								icon:"none",
-								title:"没有可下载的视频文件"
+								icon: "none",
+								title: "没有可下载的视频文件"
 							})
 							return
 						}
 						const downloadTask = uni.downloadFile({
-						    url: video.url,
-						    success: (res) => {
+							url: video.url,
+							success: (res) => {
 								//console.log(res)
 								uni.hideLoading()
-						        if (res.statusCode === 200) {
+								if (res.statusCode === 200) {
 									uni.saveImageToPhotosAlbum({
-									  filePath: res.tempFilePath,
-									  success: (_res) => {
-										console.log(_res)
-									  }
-									});
-						            uni.showToast({
-						            	title:"视频下载成功"
-						            })
-						        }else{
+										filePath: res.tempFilePath,
+										success: (_res) => {
+											console.log(_res)
+										}
+									})
 									uni.showToast({
-										icon:"none",
-										title:"视频下载失败"
+										title: "视频下载成功"
+									})
+									this.this._addDownloadHistory()
+								} else {
+									uni.showToast({
+										icon: "none",
+										title: "视频下载失败"
 									})
 								}
-						    },
-							fail:res=>{
+							},
+							fail: res => {
 								uni.hideLoading()
 								uni.showToast({
-									icon:"none",
-									title:"视频下载出错"
+									icon: "none",
+									title: "视频下载出错"
 								})
 							}
 						});
-						
+
 						downloadTask.onProgressUpdate((res) => {
 							//console.log(res)
 							uni.hideLoading()
-							if(res.progress>=100) return
+							if (res.progress >= 100) return
 							uni.showLoading({
-								mask:true,
-								title:"正在下载" + res.progress + "%"
+								mask: true,
+								title: "正在下载" + res.progress + "%"
 							})
-						    //console.log('下载进度' + res.progress);
-						    //console.log('已经下载的数据长度' + res.totalBytesWritten);
-						    //console.log('预期需要下载的数据总长度' + res.totalBytesExpectedToWrite);
 						});
-				    },
-				    fail: res => {
-				        console.log(res.errMsg);
-				    }
+					},
+					fail: res => {
+						console.log(res.errMsg);
+					}
 				});
 			},
-			goToAddcomment(){
+			goToAddcomment() {
 				uni.navigateTo({
-					url:"/pages/addComment/addComment?vid="+this.vid,
-					animationType:"slide-in-bottom"
+					url: "/pages/addComment/addComment?vid=" + this.vid,
+					animationType: "slide-in-bottom"
 				})
 			},
-			getCommentList(replace){
+			getCommentList(replace) {
 				getComment({
-					type:3,
-					oid:this.vid,
-					page:this.commentData ? this.commentData.current_page : 1
-				}).then(res=>{
-					if(replace){
+					type: 3,
+					oid: this.vid,
+					page: this.commentData ? this.commentData.current_page : 1
+				}).then(res => {
+					if (replace) {
 						this.commentData = res.data
-					}else{
-						if(!this.commentData){
+					} else {
+						if (!this.commentData) {
 							this.commentData = res.data
-						}else{
+						} else {
 							this.commentData.list = this.commentData.list.concat(res.data.list)
 						}
 					}
-					
+
 					//console.log(res)
-				}).catch(error=>{
+				}).catch(error => {
 					console.log(error)
 				})
 			},
-			onPreimages(images,index){
+			onPreimages(images, index) {
 				var list = []
-				for(var i=0;i<images.length;i++){
+				for (var i = 0; i < images.length; i++) {
 					var item = images[i]
-					if(!item) continue
+					if (!item) continue
 					var length = item.indexOf("?")
-					list.push(length == -1 ? item : item.substr(0,length))
+					list.push(length == -1 ? item : item.substr(0, length))
 				}
-				
+
 				uni.previewImage({
-					current:index,
-					urls:list
+					current: index,
+					urls: list
 				})
 			},
-			onFollow(item){
-				if(!this.userInfo){
+			onFollow(item) {
+				if (!this.userInfo) {
 					this.goToLogin()
 					return
 				}
 				uni.showLoading({
-					title:"正在提交"
+					title: "正在提交"
 				})
 				followUser({
-					follow_id:item.user_id
-				}).then(res=>{
+					follow_id: item.user_id
+				}).then(res => {
 					uni.showToast({
-						title:res.msg
+						title: res.msg
 					})
 					item.is_follow = 1
-				}).catch(error=>{
+				}).catch(error => {
 					console.log(error)
 				})
 			},
-			cancelFollowUser(item){
-				if(!this.userInfo){
+			cancelFollowUser(item) {
+				if (!this.userInfo) {
 					this.goToLogin()
 					return
 				}
 				uni.showLoading({
-					title:"正在提交"
+					title: "正在提交"
 				})
 				cancelFollowUser({
-					follow_id:item.user_id
-				}).then(res=>{
+					follow_id: item.user_id
+				}).then(res => {
 					uni.showToast({
-						title:res.msg
+						title: res.msg
 					})
 					item.is_follow = 0
-				}).catch(error=>{
+				}).catch(error => {
 					console.log(error)
 				})
 			},
-			onLike(item){
-				if(!this.userInfo){
+			onLike(item) {
+				if (!this.userInfo) {
 					this.goToLogin()
 					return
 				}
 				uni.showLoading({
-					title:"正在提交"
+					title: "正在提交"
 				})
-				if(item.is_like == 0){
+				if (item.is_like == 0) {
 					addLike({
-						vid:item.id,
-						type:2
-					}).then(res=>{
+						vid: item.id,
+						type: 2
+					}).then(res => {
 						uni.showToast({
-							title:res.msg
+							title: res.msg
 						})
 						item.is_like = 1
 						item.like_num++
-					}).catch(error=>{
+					}).catch(error => {
 						console.log(error)
 					})
-				}else{
+				} else {
 					removeLike({
-						vid:item.id,
-						type:2
-					}).then(res=>{
+						vid: item.id,
+						type: 2
+					}).then(res => {
 						uni.showToast({
-							title:res.msg
+							title: res.msg
 						})
 						item.is_like = 0
 						item.like_num--
-					}).catch(error=>{
+					}).catch(error => {
 						console.log(error)
 					})
 				}
@@ -509,255 +512,298 @@
 </script>
 
 <style lang="scss" scoped>
-@import "../../common/font.css";
+	@import "../../common/font.css";
 
-.content{
-	display: flex;
-	flex-direction: column;
-	flex: 1;
-	min-height: 100vh;
-	background-color:#000000;
-}
-.top-box{
-	display: flex;
-	position: relative;
-	flex-direction: column;
-}
-.bg-box{
-	position: absolute;
-	width: 100%;
-	height: 100%;
-}
-.top-bg-image{
-	filter:blur(8px);
-	width: 100%;
-	height: 100%;
-}
-.top-conent-box{
-	z-index: 999;
-	background-image: linear-gradient(rgba(28,28,28,0), rgba(28,28,28,1));
-}
-.thumb-box{
-	width: 220rpx;
-	height: 280rpx;
-	background-color: #C8C7CC;
-	margin: auto;
-	margin-top: 60rpx;
-	overflow:hidden;
-	position: relative;
-}
-.thumb-image{
-	width: 220rpx;
-	height: 280rpx;
-}
-.score-text{
-	position: absolute;
-	font-size: $uni-font-size-base;
-	color: #ce5e30;
-	bottom: 5rpx;
-	right: 10rpx;
-}
-.info{
-	text-align: center;
-	padding: 20rpx;
-	color: #C0C0C0;
-}
-.info .year{
-	margin-right: 20rpx;
-}
-.info .duration{
-	margin-left: 20rpx;
-}
-.play-btn{
-	display: flex;
-	flex-direction: row;
-	background-color:#f42c2c;
-	padding: 20rpx;
-	border-radius: 10rpx;
-	flex-direction: row;
-	justify-content: center;
-	align-items: center;
-	margin: 20rpx;
-}
-.play-btn-text{
-	font-size: $uni-font-size-base;
-	color: #FFFFFF;
-}
-.subtitle-box{
-	padding: 20rpx;
-	font-size: $uni-font-size-base;
-	color: #FFFFFF;
-	font-weight: bold;
-}
-.tool-box{
-	display: flex;
-	flex-direction: row;
-	padding: 30rpx 80rpx 80rpx;
-	justify-content: space-between;
-	align-items: center;
-}
-.tool-box .tool-item{
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-}
-.tool-box .tool-item .icon{
-	color: #FFFFFF;
-	font-size: 48rpx;
-	margin-bottom: 20rpx;
-}
-.tool-box .tool-item .text{
-	color: #C8C7CC;
-	font-size: 28rpx;
-}	
-.video-list-box{
-	background-color: #1c1c1c;
-	padding: 20rpx;
-}
-.video-list-box .title{
-	color: #FFFFFF;
-	font-size: $uni-font-size-lg;
-	font-weight: bold;
-}
-.video-list-box .list-box{
-	padding: 20rpx 0rpx;
-	display: flex;
-	flex-direction: row;
-	flex-wrap: wrap;
-}
-.video-list-box .list-box .text{
-	color: #F1F1F1;
-	font-size: $uni-font-size-base;
-	border: #F8F8F8 1px solid;
-	padding: 10rpx 20rpx;
-	margin: 10rpx;
-}
-.video-list-box .list-box .select{
-	color:#F0AD4E;
-	border: #F0AD4E 1px solid;
-}
-.btn-press{
-	opacity: 0.7;
-}
-.comment-box{
-	margin-top: 20rpx;
-	background-color: #1c1c1c;
-	padding: 20rpx;
-}
-.comment-box .title{
-	color: #FFFFFF;
-	font-size: $uni-font-size-lg;
-	font-weight: bold;
-}
-.comment-box .comment-list{
-	padding: 20rpx 0;
-	color: #F8F8F8;
-}
-.add-comment{
-	position: fixed;
-	display: flex;
-	flex-direction: row;
-	background-color: #2e2e2f;
-	width: 750rpx;
-	height: 100rpx;
-	bottom: 0rpx;
-	justify-content: center;
-	align-items: center;
-}
-.avatar-image{
-	width: 60rpx;
-	height: 60rpx;
-	border-radius: 60rpx;
-	border-width: 2px;
-	border-style: solid;
-	border-color: #00a3ff;
-}
-.add-comment-text{
-	color: #C8C7CC;
-	font-size: $uni-font-size-base;
-	margin-left: 30rpx;
-}
-.comment-item{
-	border-bottom: #353535 1px solid;
-	padding: 20rpx 0;
-}
-.comment-item .info-box{
-	display: flex;
-	flex-direction: row;
-	justify-content: space-between;
-	align-items: center;
-}
-.avatar-box{
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-}
-.avatar-box .avatar-image{
-	width: 80rpx;
-	height: 80rpx;
-	border-radius: 80rpx;
-	border-color: #ff7ddd;
-}
-.user-info{
-	display: flex;
-	flex-direction: column;
-	margin-left: 20rpx;
-}
-.user-info .username{
-	font-size: 32rpx;
-	font-weight: bold;
-}
-.user-info .comment-date{
-	font-size: 28rpx;
-	color: #C8C7CC;
-}
-.comment-content{
-	padding: 20rpx 0;
-}
-.comment-image-list{
-	
-}
-.comment-image-list .comment-image{
-	width: 215rpx;
-	height: 215rpx;
-	margin: 10rpx;
-}
-.follow-btn{
-	background-color: #DD524D;
-	color: #F1F1F1;
-	font-size: $uni-font-size-sm;
-	padding: 10rpx 20rpx;
-	border-radius: 10rpx;
-}
-.cancel-follow-btn{
-	background-color: #3F536E;
-	color: #F1F1F1;
-	font-size: $uni-font-size-sm;
-	padding: 10rpx 20rpx;
-	border-radius: 10rpx;
-}
-.c-tool-box{
-	display: flex;
-	flex-direction: row;
-	justify-content:flex-end;
-	align-items: center;
-	margin-top: 20rpx;
-}
-.c-tool-item{
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-}
-.c-tool-btn{
-	display: flex;
-	font-size: 32rpx;
-	color: #F1F1F1;
-}
-.c-tool-text{
-	display: flex;
-	font-size: 32rpx;
-	color: #F1F1F1;
-	margin-left: 10rpx;
-}
+	.content {
+		display: flex;
+		flex-direction: column;
+		flex: 1;
+		min-height: 100vh;
+		background-color: #000000;
+	}
+
+	.top-box {
+		display: flex;
+		position: relative;
+		flex-direction: column;
+	}
+
+	.bg-box {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+	}
+
+	.top-bg-image {
+		filter: blur(8px);
+		width: 100%;
+		height: 100%;
+	}
+
+	.top-conent-box {
+		z-index: 999;
+		background-image: linear-gradient(rgba(28, 28, 28, 0), rgba(28, 28, 28, 1));
+	}
+
+	.thumb-box {
+		width: 220rpx;
+		height: 280rpx;
+		background-color: #C8C7CC;
+		margin: auto;
+		margin-top: 60rpx;
+		overflow: hidden;
+		position: relative;
+	}
+
+	.thumb-image {
+		width: 220rpx;
+		height: 280rpx;
+	}
+
+	.score-text {
+		position: absolute;
+		font-size: $uni-font-size-base;
+		color: #ce5e30;
+		bottom: 5rpx;
+		right: 10rpx;
+	}
+
+	.info {
+		text-align: center;
+		padding: 20rpx;
+		color: #C0C0C0;
+	}
+
+	.info .year {
+		margin-right: 20rpx;
+	}
+
+	.info .duration {
+		margin-left: 20rpx;
+	}
+
+	.play-btn {
+		display: flex;
+		flex-direction: row;
+		background-color: #f42c2c;
+		padding: 20rpx;
+		border-radius: 10rpx;
+		flex-direction: row;
+		justify-content: center;
+		align-items: center;
+		margin: 20rpx;
+	}
+
+	.play-btn-text {
+		font-size: $uni-font-size-base;
+		color: #FFFFFF;
+	}
+
+	.subtitle-box {
+		padding: 20rpx;
+		font-size: $uni-font-size-base;
+		color: #FFFFFF;
+		font-weight: bold;
+	}
+
+	.tool-box {
+		display: flex;
+		flex-direction: row;
+		padding: 30rpx 80rpx 80rpx;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	.tool-box .tool-item {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.tool-box .tool-item .icon {
+		color: #FFFFFF;
+		font-size: 48rpx;
+		margin-bottom: 20rpx;
+	}
+
+	.tool-box .tool-item .text {
+		color: #C8C7CC;
+		font-size: 28rpx;
+	}
+
+	.video-list-box {
+		background-color: #1c1c1c;
+		padding: 20rpx;
+	}
+
+	.video-list-box .title {
+		color: #FFFFFF;
+		font-size: $uni-font-size-lg;
+		font-weight: bold;
+	}
+
+	.video-list-box .list-box {
+		padding: 20rpx 0rpx;
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+	}
+
+	.video-list-box .list-box .text {
+		color: #F1F1F1;
+		font-size: $uni-font-size-base;
+		border: #F8F8F8 1px solid;
+		padding: 10rpx 20rpx;
+		margin: 10rpx;
+	}
+
+	.video-list-box .list-box .select {
+		color: #F0AD4E;
+		border: #F0AD4E 1px solid;
+	}
+
+	.btn-press {
+		opacity: 0.7;
+	}
+
+	.comment-box {
+		margin-top: 20rpx;
+		background-color: #1c1c1c;
+		padding: 20rpx;
+	}
+
+	.comment-box .title {
+		color: #FFFFFF;
+		font-size: $uni-font-size-lg;
+		font-weight: bold;
+	}
+
+	.comment-box .comment-list {
+		padding: 20rpx 0;
+		color: #F8F8F8;
+	}
+
+	.add-comment {
+		position: fixed;
+		display: flex;
+		flex-direction: row;
+		background-color: #2e2e2f;
+		width: 750rpx;
+		height: 100rpx;
+		bottom: 0rpx;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.avatar-image {
+		width: 60rpx;
+		height: 60rpx;
+		border-radius: 60rpx;
+		border-width: 2px;
+		border-style: solid;
+		border-color: #00a3ff;
+	}
+
+	.add-comment-text {
+		color: #C8C7CC;
+		font-size: $uni-font-size-base;
+		margin-left: 30rpx;
+	}
+
+	.comment-item {
+		border-bottom: #353535 1px solid;
+		padding: 20rpx 0;
+	}
+
+	.comment-item .info-box {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	.avatar-box {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+	}
+
+	.avatar-box .avatar-image {
+		width: 80rpx;
+		height: 80rpx;
+		border-radius: 80rpx;
+		border-color: #ff7ddd;
+	}
+
+	.user-info {
+		display: flex;
+		flex-direction: column;
+		margin-left: 20rpx;
+	}
+
+	.user-info .username {
+		font-size: 32rpx;
+		font-weight: bold;
+	}
+
+	.user-info .comment-date {
+		font-size: 28rpx;
+		color: #C8C7CC;
+	}
+
+	.comment-content {
+		padding: 20rpx 0;
+	}
+
+	.comment-image-list {}
+
+	.comment-image-list .comment-image {
+		width: 215rpx;
+		height: 215rpx;
+		margin: 10rpx;
+	}
+
+	.follow-btn {
+		background-color: #DD524D;
+		color: #F1F1F1;
+		font-size: $uni-font-size-sm;
+		padding: 10rpx 20rpx;
+		border-radius: 10rpx;
+	}
+
+	.cancel-follow-btn {
+		background-color: #3F536E;
+		color: #F1F1F1;
+		font-size: $uni-font-size-sm;
+		padding: 10rpx 20rpx;
+		border-radius: 10rpx;
+	}
+
+	.c-tool-box {
+		display: flex;
+		flex-direction: row;
+		justify-content: flex-end;
+		align-items: center;
+		margin-top: 20rpx;
+	}
+
+	.c-tool-item {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+	}
+
+	.c-tool-btn {
+		display: flex;
+		font-size: 32rpx;
+		color: #F1F1F1;
+	}
+
+	.c-tool-text {
+		display: flex;
+		font-size: 32rpx;
+		color: #F1F1F1;
+		margin-left: 10rpx;
+	}
 </style>

@@ -204,6 +204,15 @@
             }
             
         }
+        ,{
+            "path" : "pages/my/hisgory/downloadRecord",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "下载记录",
+                "enablePullDownRefresh": false
+            }
+            
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "white",
