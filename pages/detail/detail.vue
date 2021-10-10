@@ -347,8 +347,8 @@
 				}) => {})
 			},
 			onDownload() {
-				this._addDownloadHistory()
-				return
+				// this._addDownloadHistory()
+				// return
 				if (this.userInfo === null) {
 					return uni.showToast({
 						title: '请先登录',
