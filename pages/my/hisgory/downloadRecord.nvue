@@ -10,7 +10,7 @@
 						<image class="cate-image" v-else src="@/static/images/no_image.jpg"></image>
 					</view>
 					<view class="right-box">
-						<text class="card-title">{{item.title}}</text>
+						<text class="card-title">{{ item.title }}</text>
 						<text class="card-subtitle">下载时间：{{item.mtime}}</text>
 					</view>
 				</view>
@@ -153,6 +153,7 @@
 	}
 
 	.right-box {
+		flex: 1;
 		margin-left: 20rpx;
 	}
 
@@ -160,6 +161,8 @@
 		font-size: $uni-font-size-base;
 		color: #C8C7CC;
 		margin-bottom: 10rpx;
+		text-overflow: ellipsis;
+		lines: 2;
 	}
 
 	.card-subtitle {
