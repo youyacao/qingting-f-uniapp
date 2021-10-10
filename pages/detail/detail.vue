@@ -117,7 +117,8 @@
 	} from "@/js_sdk/video.js"
 	import {
 		followUser,
-		cancelFollowUser
+		cancelFollowUser,
+		viewVideo
 	} from "@/js_sdk/user.js"
 	export default {
 		data() {
@@ -158,6 +159,16 @@
 			this.getCommentData(getCommentList)
 		},
 		methods: {
+			_viewVideo() {
+				viewVideo().then(({ code, msg }) => {
+					if (code === 400) {
+						uni.showToast({
+							title: msg,
+							icon: 'none'
+						})
+					}
+				})
+			},
 			loadViedoInfo() {
 				getVideo(this.vid).then(res => {
 					this.videoInfo = res.data
@@ -167,6 +178,7 @@
 					uni.setNavigationBarTitle({
 						title: this.videoTitle
 					})
+					console.log(res.data)
 				}).catch(error => {
 					console.log(error)
 				})
@@ -202,7 +214,8 @@
 						icon: 'none'
 					})
 				}
-				if (this.userInfo && this.userInfo.share_free_num === 0) {
+				console.log(this.userInfo.vip_share_free_num === 0)
+				if (this.userInfo && this.userInfo.share_free_num === 0 && this.userInfo.vip_share_free_num === 0) {
 					return uni.showToast({
 						title: '免费观看次数已用完',
 						icon: 'none'
@@ -221,10 +234,16 @@
 				}
 				this.playIndex = index
 				this.$store.dispatch("playlist", this.videoList)
+				// console.log(this.videoList)
+				// console.log(index)
+				// return
 				uni.navigateTo({
 					animationType: 'none',
 					url: "/pages/player/player?index=" + index,
-					success() {}
+					success: () => {
+						console.log('play success')
+						this._viewVideo()
+					}
 				})
 			},
 			onFullscreen({
@@ -328,6 +347,8 @@
 				}) => {})
 			},
 			onDownload() {
+				this._addDownloadHistory()
+				return
 				if (this.userInfo === null) {
 					return uni.showToast({
 						title: '请先登录',
@@ -360,7 +381,7 @@
 									uni.showToast({
 										title: "视频下载成功"
 									})
-									this.this._addDownloadHistory()
+									this._addDownloadHistory()
 								} else {
 									uni.showToast({
 										icon: "none",

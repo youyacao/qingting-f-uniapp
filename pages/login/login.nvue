@@ -99,10 +99,6 @@
 				login(this.formData).then(res=>{
 					uni.setStorageSync("token",res.data.token)
 					uni.setStorageSync("expires_in",Date.now() + res.data.expires_in)
-					uni.showLoading({
-						mask:true,
-						title:"正在登陆"
-					})
 					getUser().then(_res=>{
 						this.$store.dispatch("userInfo",_res.data)
 						uni.navigateBack({

@@ -11,7 +11,7 @@
 					</view>
 					<view class="user-vip">
 						<text class="vip-text mb-10">会员有效期至：{{userInfo.vip_end_time ? userInfo.vip_end_time : "未开通会员"}}</text>
-						<text class="vip-text">免费观看次数：{{userInfo.share_free_num }}</text>
+						<text class="vip-text">免费观看次数：{{userInfo.share_free_num + userInfo.vip_share_free_num }}</text>
 					</view>
 				</view>
 			</view>

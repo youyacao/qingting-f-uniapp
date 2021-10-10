@@ -4,19 +4,14 @@
 			<text class="nodata-box"
 				v-if="!dataInfo || dataInfo.list.length == 0">{{loaded ? '暂无内容' : '正在加载...'}}</text>
 			<template v-for="(item,index) in dataInfo.list" v-else>
-				<view class="card-box" @click="goTodetail(item.movie)" v-if="item.movie">
+				<view class="card-box" @click="goTodetail(item)" v-if="item">
 					<view class="left-box">
-						<image class="cate-image" :src="item.movie.thumb" v-if="item.movie.thumb"></image>
+						<image class="cate-image" :src="item.thumb" v-if="item.thumb"></image>
 						<image class="cate-image" v-else src="@/static/images/no_image.jpg"></image>
 					</view>
 					<view class="right-box">
-						<text class="card-title">{{item.movie.title}}</text>
-						<text class="card-subtitle">类型：{{item.movie.type_str}}</text>
-						<text class="card-subtitle">分类：{{item.movie.category_str}}</text>
-						<text class="card-subtitle">地区：{{item.movie.region_str}}</text>
-						<text class="card-subtitle">观看历史：{{item.mtime}}</text>
-						<text class="card-subtitle">观看剧集：{{item.movie_detail.title}}</text>
-						<text class="card-subtitle">观看时长：{{getDurationStr(item.second)}}</text>
+						<text class="card-title">{{item.title}}</text>
+						<text class="card-subtitle">下载时间：{{item.mtime}}</text>
 					</view>
 				</view>
 			</template>
@@ -70,6 +65,7 @@
 					type: 1,
 					limit: 10
 				}).then(res => {
+					console.log(res)
 					this.loaded = true
 					uni.stopPullDownRefresh()
 					if (this.dataInfo) {
@@ -92,7 +88,7 @@
 			goTodetail(item) {
 				this.$store.dispatch("video", item)
 				uni.navigateTo({
-					url: "/pages/detail/detail?id=" + item.id
+					url: "/pages/detail/detail?id=" + item.vid
 				})
 			}
 		}
