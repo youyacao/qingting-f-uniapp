@@ -2,22 +2,22 @@ import config from '@/common/config.js'
 
 
 const request = {
-	configs:{
-		base_url:config.base_url
+	configs: {
+		base_url: config.base_url
 	},
-	requestUrl:'',
-	lastResult:{},
-	isStopRquest:false,
-	lastRquestTime:0,
-	getBaseUrl(){
+	requestUrl: '',
+	lastResult: {},
+	isStopRquest: false,
+	lastRquestTime: 0,
+	getBaseUrl() {
 		return this.configs.base_url;
 	},
-	getRequestUrl(path){
-		return this.getBaseUrl()+path;
+	getRequestUrl(path) {
+		return this.getBaseUrl() + path;
 	},
-	getHeader(header,path,token,white){
-		if(typeof header == 'undefined' || !header) header = {};
-		if(path.indexOf(this.getBaseUrl()) == 0){
+	getHeader(header, path, token, white) {
+		if (typeof header == 'undefined' || !header) header = {};
+		if (path.indexOf(this.getBaseUrl()) == 0) {
 			header['X-Requested-With'] = 'XMLHttpRequest';
 			header['Authorization'] = token;
 			/*this.isStopRquest = token ? false : true;
@@ -32,28 +32,28 @@ const request = {
 		}
 		return header;
 	},
-	__result(){
+	__result() {
 		return {
-			success:null,
-			fail:null,
-			then(callback){
+			success: null,
+			fail: null,
+			then(callback) {
 				this.success = callback;
 				return this;
 			},
-			catch(callback){
+			catch (callback) {
 				this.fail = callback;
 				return this;
 			}
 		}
 	},
-	__rq(path,data,header,method,white){
+	__rq(path, data, header, method, white) {
 		var token = uni.getStorageSync('token');
 		path = this.getRequestUrl(path);
 		var result = this.__result();
 		var _this = this;
-		header = this.getHeader(header,path,token,white);
+		header = this.getHeader(header, path, token, white);
 		var time = (new Date()).getTime();
-		
+
 		//如果设置为停止请求，则忽略所有请求；请求超时允许为3秒；
 		/*if((!token && !white) || (path == this.requestUrl && (time-this.lastRquestTime)<3000)){
 			if(path == this.requestUrl){
@@ -64,184 +64,200 @@ const request = {
 			this.requestUrl = null;
 			return result;
 		}*/
-		
+
 		this.lastRquestTime = time;
 		this.requestUrl = path;
 		this.lastResult = result;
-		
+
 		uni.request({
-			url:path,
-			data:data,
-			method:method,
-			header:header,
+			url: path,
+			data: data,
+			method: method,
+			header: header,
 			success(res) {
 				_this.requestUrl = null;
 				uni.hideLoading();
 				//如果是已停止请求，则忽略返回的数据
-				if((_this.isStopRquest && !white)){
+				if ((_this.isStopRquest && !white)) {
 					return;
 				}
-				if(res.data.code == 500 && res.data.msg.indexOf("token")>0 && !white){
-					if(!uni.getStorageSync("token")){
+				if (res.data.code == 500 && res.data.msg.indexOf("token") > 0 && !white) {
+					if (!uni.getStorageSync("token")) {
 						return;
 					}
-					uni.getStorageSync("token",null);
-					
+					uni.getStorageSync("token", null);
+
 					var pages = getCurrentPages();
-					if(pages && pages.length && pages[0].route == '/pages/login/login'){
+					if (pages && pages.length && pages[0].route == '/pages/login/login') {
 						return;
 					}
-					
+
 					uni.navigateTo({
-						url:"/pages/login/login"
+						url: "/pages/login/login"
 					})
-				}else if(res.data.code == 200 || res.data.code == 201){
-					if(typeof result.success == 'function'){
+				} else if (res.data.code == 200 || res.data.code == 201) {
+					if (typeof result.success == 'function') {
 						result.success(res.data);
 					}
-				}else{
-					if(!white){
+				} else {
+					if (!white) {
 						uni.showToast({
-							icon:"none",
-							duration:2000,
-							title:res.data.msg ? res.data.msg : '数据请求出错'
+							icon: "none",
+							duration: 2000,
+							title: res.data.msg ? res.data.msg : '数据请求出错'
 						});
 					}
-					
-					if(typeof result.fail == 'function'){
-						result.fail({message:res.data.msg ? res.data.msg : '数据请求出错',data:null,code:res.data.code});
+
+					if (typeof result.fail == 'function') {
+						result.fail({
+							message: res.data.msg ? res.data.msg : '数据请求出错',
+							data: null,
+							code: res.data.code
+						});
 					}
 				}
 			},
 			fail(res) {
 				_this.requestUrl = null;
-				
+
 				uni.hideLoading();
-				
+
 				//如果是已停止请求，则忽略返回的数据
-				if(_this.isStopRquest && !white){
+				if (_this.isStopRquest && !white) {
 					return;
 				}
 				uni.showToast({
-					icon:"none",
-					duration:2000,
-					title:"网络请求错误"
+					icon: "none",
+					duration: 2000,
+					title: "网络请求错误"
 				});
-				if(typeof result.fail == 'function'){
-					result.fail({message:'网络请求错误',data:null,code:500});
+				if (typeof result.fail == 'function') {
+					result.fail({
+						message: '网络请求错误',
+						data: null,
+						code: 500
+					});
 				}
 			}
 		});
-		
+
 		return result;
 	},
-	
-	__upload(path,data,header,white){
+
+	__upload(path, data, header, white) {
 		var token = uni.getStorageSync('token');
 		path = this.getRequestUrl(path);
 		var result = this.__result();
 		var _this = this;
-		header = this.getHeader(header,path,token,white);
+		header = this.getHeader(header, path, token, white);
 		var time = (new Date()).getTime();
-		
+
 		//如果设置为停止请求，则忽略所有请求；请求超时允许为3秒；
-		if((!token && !white) || (path == this.requestUrl && (time-this.lastRquestTime)<3000)){
-			if(path == this.requestUrl){
+		if ((!token && !white) || (path == this.requestUrl && (time - this.lastRquestTime) < 3000)) {
+			if (path == this.requestUrl) {
 				result = this.lastResult;
-			}else{
+			} else {
 				uni.hideLoading();
 			}
 			this.requestUrl = null;
 			return result;
 		}
-		
+
 		this.lastRquestTime = time;
 		this.requestUrl = path;
 		this.lastResult = result;
 		var params = {
-			url:path,
-			filePath:data.filePath ? data.filePath : null,
-			name:data.name ? data.name : "file",
-			formData:data.data ? data.data : null,
-			header:header,
+			url: path,
+			filePath: data.filePath ? data.filePath : null,
+			name: data.name ? data.name : "file",
+			formData: data.data ? data.data : null,
+			header: header,
 			success(res) {
 				_this.requestUrl = null;
 				uni.hideLoading();
 				//如果是已停止请求，则忽略返回的数据
-				if(_this.isStopRquest && !white){
+				if (_this.isStopRquest && !white) {
 					return;
 				}
-				if(res.data){
-					try{
+				if (res.data) {
+					try {
 						res.data = JSON.parse(res.data);
-					}catch(e){
+					} catch (e) {
 						console.log("返回的不是JSON对象")
 					}
 				}
-				if(res.data.code == 500 && res.data.msg.indexOf("token")>0 && !white){
-					if(!uni.getStorageSync("token")){
+				if (res.data.code == 500 && res.data.msg.indexOf("token") > 0 && !white) {
+					if (!uni.getStorageSync("token")) {
 						return;
 					}
-					uni.getStorageSync("token",null);
-					
+					uni.getStorageSync("token", null);
+
 					var pages = getCurrentPages();
-					if(pages && pages.length && pages[0].route == '/pages/login/login'){
+					if (pages && pages.length && pages[0].route == '/pages/login/login') {
 						return;
 					}
-					
+
 					uni.navigateTo({
-						url:"/pages/login/login"
+						url: "/pages/login/login"
 					})
-				}else if(res.statusCode == 200 || res.statusCode == 201){
-					if(typeof result.success == 'function'){
+				} else if (res.statusCode == 200 || res.statusCode == 201) {
+					if (typeof result.success == 'function') {
 						result.success(res.data);
 					}
-				}else{
+				} else {
 					uni.showToast({
-						icon:"none",
-						duration:2000,
-						title:res.data.message ? res.data.message : '数据请求出错'
+						icon: "none",
+						duration: 2000,
+						title: res.data.message ? res.data.message : '数据请求出错'
 					});
-					if(typeof result.fail == 'function'){
-						result.fail({message:'数据请求出错',data:null,code:res.statusCode});
+					if (typeof result.fail == 'function') {
+						result.fail({
+							message: '数据请求出错',
+							data: null,
+							code: res.statusCode
+						});
 					}
 				}
 			},
 			fail(res) {
 				_this.requestUrl = null;
-				
+
 				uni.hideLoading();
-				
+
 				//如果是已停止请求，则忽略返回的数据
-				if(_this.isStopRquest && !white){
+				if (_this.isStopRquest && !white) {
 					return;
 				}
 				uni.showToast({
-					icon:"none",
-					duration:2000,
-					title:"网络请求错误"
+					icon: "none",
+					duration: 2000,
+					title: "网络请求错误"
 				});
-				if(typeof result.fail == 'function'){
-					result.fail({message:'网络请求错误',data:null,code:500});
+				if (typeof result.fail == 'function') {
+					result.fail({
+						message: '网络请求错误',
+						data: null,
+						code: 500
+					});
 				}
 			}
 		}
-		if(data.files){
+		if (data.files) {
 			params.files = data.files;
 		}
-		
+
 		uni.uploadFile(params);
-		
+
 		return result;
 	},
-	post(path,data,header,white){
-		return this.__rq(path,data,header,'POST',white);
+	post(path, data, header, white) {
+		return this.__rq(path, data, header, 'POST', white);
 	},
-	get(path,header,white){
-		return this.__rq(path,null,header,'GET',white);
+	get(path, header, white) {
+		return this.__rq(path, null, header, 'GET', white);
 	},
-	upload(path,data,header,white){
-		return this.__upload(path,data,header,white);
+	upload(path, data, header, white) {
+		return this.__upload(path, data, header, white);
 	}
 }
 

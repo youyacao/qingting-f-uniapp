@@ -213,6 +213,24 @@
             }
             
         }
+        ,{
+            "path" : "pages/player/index",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/my/invitationRecord/invitationRecord",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "邀请记录",
+                "enablePullDownRefresh": false
+            }
+            
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "white",

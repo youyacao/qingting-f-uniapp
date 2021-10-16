@@ -20,7 +20,6 @@
 						<text class="country">{{videoInfo.region_str}}</text>
 						<text class="duration">{{videoInfo.duration}}</text>
 					</view>
-
 				</view>
 
 				<view class="play-btn" hover-class="btn-press" @click="playVideo(-1)">
@@ -55,8 +54,8 @@
 		<view class="video-list-box">
 			<view class="title">选择剧集</view>
 			<view class="list-box">
-				<text class="text" :class="{'select':playIndex == index}" v-for="(item,index) in videoList"
-					:key="item.id" @click="playVideo(index)">{{item.title}}</text>
+				<text class="text" :class="{'select':playIndex == index}" v-for="(item, index) in videoList"
+					:key="item.id" @click="playIndex = index">{{item.title}}</text>
 			</view>
 		</view>
 		<view class="comment-box">
@@ -98,6 +97,12 @@
 		<view class="add-comment" v-else @click="goToLogin()">
 			<text class="add-comment-text">登陆后可发表影评~</text>
 		</view>
+		<uni-popup ref="popup" type="center" :mask-click="false" style="z-index: 9999;">
+			<view class="download-popup">
+				<image class="download-loading_gif" src="@/static/Ball-1s-200px.gif" mode=""></image>
+				<view class="download-text">正在下载中: {{ progress }}</view>
+			</view>
+		</uni-popup>
 	</view>
 </template>
 
@@ -120,6 +125,7 @@
 		cancelFollowUser,
 		viewVideo
 	} from "@/js_sdk/user.js"
+
 	export default {
 		data() {
 			return {
@@ -132,7 +138,8 @@
 				player: null,
 				videoTitle: null,
 				tabList: [],
-				commentData: null
+				commentData: null,
+				progress: '0%'
 			}
 		},
 		computed: {
@@ -159,8 +166,17 @@
 			this.getCommentData(getCommentList)
 		},
 		methods: {
+			open() {
+				this.$refs.popup.open()
+			},
+			close() {
+				this.$refs.popup.close()
+			},
 			_viewVideo() {
-				viewVideo().then(({ code, msg }) => {
+				viewVideo().then(({
+					code,
+					msg
+				}) => {
 					if (code === 400) {
 						uni.showToast({
 							title: msg,
@@ -208,13 +224,15 @@
 			},
 			// 播放
 			playVideo(index) {
+    //             this.open()
+				// console.log(this.videoList)
+				// return
 				if (this.userInfo === null) {
 					return uni.showToast({
 						title: '请先登录',
 						icon: 'none'
 					})
 				}
-				console.log(this.userInfo.vip_share_free_num === 0)
 				if (this.userInfo && this.userInfo.share_free_num === 0 && this.userInfo.vip_share_free_num === 0) {
 					return uni.showToast({
 						title: '免费观看次数已用完',
@@ -379,9 +397,11 @@
 										}
 									})
 									uni.showToast({
-										title: "视频下载成功"
+										title: "视频下载成功",
+										icon: 'none'
 									})
 									this._addDownloadHistory()
+									this.close()
 								} else {
 									uni.showToast({
 										icon: "none",
@@ -397,15 +417,12 @@
 								})
 							}
 						});
-
+						this.open()
 						downloadTask.onProgressUpdate((res) => {
-							//console.log(res)
+							console.log(res)
 							uni.hideLoading()
 							if (res.progress >= 100) return
-							uni.showLoading({
-								mask: true,
-								title: "正在下载" + res.progress + "%"
-							})
+							this.progress = res.progress + "%"
 						});
 					},
 					fail: res => {
@@ -434,8 +451,6 @@
 							this.commentData.list = this.commentData.list.concat(res.data.list)
 						}
 					}
-
-					//console.log(res)
 				}).catch(error => {
 					console.log(error)
 				})
@@ -534,7 +549,22 @@
 
 <style lang="scss" scoped>
 	@import "../../common/font.css";
-
+	.download-text {
+		font-size: 28rpx;
+		color: #333333;
+	}
+  .download-popup {
+    background-color: #FFFFFF;
+    border-radius: 16rpx;
+    padding: 20rpx;
+	width: 250rpx;
+	height: 250rpx;
+	text-align: center;
+  }
+	.download-loading_gif {
+		width: 200rpx;
+		height: 200rpx;
+	}
 	.content {
 		display: flex;
 		flex-direction: column;

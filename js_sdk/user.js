@@ -47,3 +47,7 @@ export function logout() {
 export function viewVideo() {
 	return request.post('user/decShareNum')
 }
+
+export function agentList(data) {
+	return request.post('agentList', data)
+}

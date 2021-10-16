@@ -61,6 +61,12 @@
 						<text class="grid-text">喜欢影视</text>
 					</view>
 				</uni-grid-item>
+				<uni-grid-item :index="7">
+					<view class="card-item" @click="goToPage('/pages/my/invitationRecord/invitationRecord')">
+						<uni-icons type="list" size="42" color="#C8C7CC"></uni-icons>
+						<text class="grid-text">邀请记录</text>
+					</view>
+				</uni-grid-item>
 				<uni-grid-item :index="6">
 					<view class="card-item" @click="goToPage('/pages/my/setting/setting')">
 						<text class="icon-font grid-icon">&#xe624;</text>
