@@ -1,0 +1,112 @@
+<template>
+	<view class="player-box">
+		<video class="my-video" id="myVideo" :src="src" @error="videoErrorCallback" :title="title" controls autoplay @fullscreenclick="_fullscreenclick" :show-fullscreen-btn="is_fullscreen"></video>
+		<view class="video-info_box">
+			<view class="video-info_top">
+				<view class="video-info_item">
+					<image class="video-info_icon" src="@/static/share-white.png" mode=""></image>
+					<text class="video-info_text">{{ video.share_num }}</text>
+				</view>
+				<view class="video-info_item">
+					<image class="video-info_icon" src="@/static/comment-white.png" mode=""></image>
+					<text class="video-info_text">{{ video.comment_num }}</text>
+				</view>
+				<view class="video-info_item">
+					<image class="video-info_icon" src="@/static/like-white.png" mode=""></image>
+					<text class="video-info_text">{{ video.like_num }}</text>
+				</view>
+				<view class="video-info_item">
+					<image class="video-info_icon" src="@/static/eye-white.png" mode=""></image>
+					<text class="video-info_text">{{ video.view_num }}</text>
+				</view>
+			</view>
+			<text class="video-title">{{ video.title }}</text>
+			<text class="intro-text">{{ video.intro }}</text>
+		</view>
+	</view>
+</template>
+
+<script>
+	import { mapGetters } from 'vuex'
+	
+	export default {
+		data() {
+			return {
+				src: '',
+				videoContext: '',
+				index: 0,
+				title: '',
+				show: false,
+				is_fullscreen: true
+			}
+		},
+		computed: {
+			...mapGetters(["userInfo", "video", "playlist"])
+		},
+		onLoad(options) {
+			this.index = parseInt(options.index)
+		},
+		onReady(res) {
+			// #ifndef MP-ALIPAY
+			this.videoContext = uni.createVideoContext('myVideo')
+			// this.videoContext.requestFullScreen()
+			// #endif
+			console.log(this.playlist)
+			console.log(this.video)
+			this.src = this.playlist[this.index].url
+			// this.src = 'https://cdn.605-zy.com/20210925/tzRUv0Qo/index.m3u8'
+			this.title = this.playlist[this.index].title
+			uni.setNavigationBarTitle({
+				title: this.title
+			})
+		},
+		methods: {
+			videoErrorCallback(e) {},
+			_fullscreenclick({ detail }) {
+				// console.log(detail)
+				this.show = !this.show
+			}
+		}
+	}
+</script>
+
+<style scoped>
+	.video-info_top {
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 30rpx;
+		border-bottom-width: 2rpx;
+		border-bottom-color: #000;
+		padding-bottom: 30rpx;
+	}
+	.video-info_item {
+		flex-direction: row;
+		align-items: center;
+	}
+	.video-info_text {
+		font-size: 28rpx;
+		color: #FFFFFF;
+	}
+	.video-info_icon {
+		width: 40rpx;
+		height: 40rpx;
+		margin-right: 10rpx;
+	}
+	.video-title {
+		font-size: 36rpx;
+		color: #FFFFFF;
+		margin-bottom: 30rpx;
+	}
+	.video-info_box {
+		padding: 30rpx;
+	}
+	.intro-text {
+		font-size: 28rpx;
+		color: #FFFFFF;
+	}
+	.my-video {
+		width: 750rpx;
+	}
+	.player-box {}
+</style>

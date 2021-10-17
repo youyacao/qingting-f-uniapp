@@ -252,12 +252,19 @@
 				}
 				this.playIndex = index
 				this.$store.dispatch("playlist", this.videoList)
-				// console.log(this.videoList)
-				// console.log(index)
-				// return
+				
+				// uni.navigateTo({
+				// 	animationType: 'none',
+				// 	url: "/pages/player/player?index=" + index,
+				// 	success: () => {
+				// 		console.log('play success')
+				// 		this._viewVideo()
+				// 	}
+				// })
+				
 				uni.navigateTo({
 					animationType: 'none',
-					url: "/pages/player/player?index=" + index,
+					url: "/pages/player/index?index=" + index,
 					success: () => {
 						console.log('play success')
 						this._viewVideo()

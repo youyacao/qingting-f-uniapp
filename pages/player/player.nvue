@@ -63,9 +63,6 @@
 			this.wWidth = uni.getSystemInfoSync().windowWidth;
 			this.boxStyle.width = this.wWidth;
 		},
-		onShow() {
-
-		},
 		onReady() {
 			//事件监听
 			//0 小屏状态下返回按钮点击 
@@ -86,7 +83,6 @@
 			//15 广告倒计时点击事件
 			//16 播放结束
 			var globalEvent = weex.requireModule('globalEvent');
-
 
 			if (this.video && this.playlist) {
 				var data = []
@@ -141,10 +137,8 @@
 				} else if (code == 3) {
 
 				} else {
-
 				}
 			})
-
 		},
 		methods: {
 			getHistoryRecord() {
@@ -305,9 +299,7 @@
 					uni.showModal({
 						title: '提示',
 						content: '是否全屏:' + isFull,
-						success: function(res) {
-
-						}
+						success: function(res) {}
 					});
 				});
 				//是否全屏
@@ -319,9 +311,7 @@
 					uni.showModal({
 						title: '提示',
 						content: '倍速:' + speed,
-						success: function(res) {
-
-						}
+						success: function(res) {}
 					});
 				});
 				//获取倍速
@@ -370,9 +360,7 @@
 					});
 				});
 				//获取视频时长 毫秒
-
 			},
-
 			getScreenShot: function() {
 				var ox = this.$refs.video;
 				ox.screenShot(result => {
